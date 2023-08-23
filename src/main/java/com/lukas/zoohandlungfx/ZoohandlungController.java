@@ -1,12 +1,10 @@
 package com.lukas.zoohandlungfx;
 
-import javafx.beans.Observable;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,59 +12,62 @@ import java.util.ResourceBundle;
 public class ZoohandlungController implements Initializable {
 
     @FXML
-    private TreeView<String> treeZoo;
+    private TreeView<String> tree;
+    @FXML
+    private StackPane stack;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         TreeItem<String> RootNode = new TreeItem<>("Zoohandlungen");
         RootNode.setExpanded(true);
-        treeZoo.setRoot(RootNode);
+        tree.setShowRoot(false);
+        tree.setRoot(RootNode);
+        addNode();
+        addStack();
 
-        ObservableList<TreeItem<String>> ChildList = RootNode.getChildren();
-        for (int i = 1; i < 11; i++) {
-            TreeItem<String> item = new TreeItem<>("Zoohandlung " + 1);
-            ChildList.add(item);
-            ObservableList<TreeItem<String>> subChilds = item.getChildren();
-            TreeItem<String> item1 = new TreeItem<>("Tiere");
-            TreeItem<String> item2 = new TreeItem<>("Pfleger");
-            TreeItem<String> item3 = new TreeItem<>("Mangement");
-            subChilds.addAll(item1, item2, item3);
-        }
+
     }
 
-    public void openAll() {     //Menu Bar Management / Alle Öffnen
-        System.out.println("Alle Zoohandlungen wurden Geöffnet");
+    private void addZoohandlung() {
+        //addNode
+        //addStack
     }
 
-    public void closeAll() {    //Menu Bar Management / Alle Schließen
-        System.out.println("Alle Zoohandlungen wurden geschlossen");
+    private void addNode() {
+        TreeItem<String> zoohandlung = new TreeItem<>("Unbenannt");
+        TreeItem<String> tiere = new TreeItem<>("Tiere");
+        TreeItem<String> pfleger = new TreeItem<>("Pfleger");
+        TreeItem<String> einstellungen = new TreeItem<>("Einstellungen");
+        zoohandlung.getChildren().add(tiere);
+        zoohandlung.getChildren().add(pfleger);
+        zoohandlung.getChildren().add(einstellungen);
+        tree.getRoot().getChildren().add(zoohandlung);
     }
 
-    public void openTimes() {   //Menu Bar Management / Öffnungzeiten
-        System.out.println("Öffnungszeiten ändern");
-    }
+    private void addStack() {
+        StackPane pane = new StackPane();
+        TabPane tiereTab = new TabPane();
+        TabPane pflegerTab = new TabPane();
+        AnchorPane settingsPane = new AnchorPane();
+        AnchorPane neuesTierPane = new AnchorPane();
 
-    public void addZoo() {      //Menu Bar Zoohandlungen / Hinzufügen
-        System.out.println("Zoohandlung hinzufügen");
-    }
+        neuesTierPane.getChildren().add(new Button("Meister"));
+        //Add Object to Pane
 
-    public void removeZoo() {   //Menu Bar Zoohandlungen / Entfernen
-        System.out.println("Zoohandlung entfern");
-    }
-
-    public void toggleAutoOpening() {   //Menu Bar Einstellungen / Automatische Öffnungszeiten
-        System.out.println("Toggle automatische Öffnungszeiten");
-    }
-
-    public void balance() {     //Menu Bar Bank / Kontostand
-        System.out.println("Kontostand anzeigen");
-    }
-
-    public void addBalance() {  //Menu Bar Bank / Geld Hinzufügen
-        System.out.println("Geld hinzufügen");
-    }
-
-    public void removeBalance() {
-        System.out.println("Geld entfernen");
+        AnchorPane tierePane = new AnchorPane();
+        AnchorPane neuerPflegerPane = new AnchorPane();
+        AnchorPane pflegerPane = new AnchorPane();
+        Tab neuesTier = new Tab("Neues Tier", neuesTierPane);
+        Tab tiere = new Tab("Tiere", tierePane);
+        Tab neuerPfleger = new Tab("Neuer Pfleger", neuerPflegerPane);
+        Tab pfleger = new Tab("Pfleger", pflegerPane);
+        tiereTab.getTabs().addAll(neuesTier, tiere);
+        pflegerTab.getTabs().addAll(neuerPfleger, pfleger);
+        settingsPane.setVisible(false);
+        tiereTab.setVisible(true);
+        pflegerTab.setVisible(false);
+        pane.setVisible(true);
+        pane.getChildren().addAll(settingsPane, tiereTab, pflegerTab);
+        stack.getChildren().add(pane);
     }
 }

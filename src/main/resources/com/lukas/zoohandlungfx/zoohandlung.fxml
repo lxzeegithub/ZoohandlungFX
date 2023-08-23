@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-
 
 <VBox prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukas.zoohandlungfx.ZoohandlungController">
    <children>
@@ -19,55 +15,42 @@
         <menus>
             <Menu mnemonicParsing="false" text="Mangement">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#openAll" text="Alle Öffnen">
+                  <MenuItem mnemonicParsing="false" text="Alle Öffnen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#closeAll" text="Alle Schließen">
+                  <MenuItem mnemonicParsing="false" text="Alle Schließen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#openTimes" text="Öffnungszeiten">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-               </items>
-            </Menu>
-          <Menu mnemonicParsing="false" text="Zoohandlungen">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#addZoo" text="Hinzufügen">
+              <MenuItem mnemonicParsing="false" text="Zoohandlung Hinzufügen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="PLUS" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#removeZoo" text="Entfernen">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="MINUS" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Einstellungen">
-               <items>
-                  <CheckMenuItem mnemonicParsing="false" onAction="#toggleAutoOpening" text="Automatische Öffnungzeiten" />
                </items>
             </Menu>
+          <Menu mnemonicParsing="false" text="Suche">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Tier Suchen" />
+                  <MenuItem mnemonicParsing="false" text="Pfleger Suchen" />
+               </items>
+          </Menu>
           <Menu mnemonicParsing="false" text="Bank">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#balance" text="Kontostand">
+              <MenuItem mnemonicParsing="false" text="Kontostand">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="K" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#addBalance" text="Geld hinzufügen">
+                  <MenuItem mnemonicParsing="false" text="Geld hinzufügen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#removeBalance" text="Geld entfernen">
+                  <MenuItem mnemonicParsing="false" text="Geld entfernen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -78,21 +61,8 @@
       </MenuBar>
       <HBox prefHeight="477.0" prefWidth="800.0">
          <children>
-            <TreeView fx:id="treeZoo" prefHeight="474.0" prefWidth="250.0" />
-            <TabPane prefHeight="474.0" prefWidth="552.0" tabClosingPolicy="UNAVAILABLE">
-              <tabs>
-                <Tab text="Untitled Tab 1">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="446.0" prefWidth="477.0" />
-                  </content>
-                </Tab>
-                <Tab text="Untitled Tab 2">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-                </Tab>
-              </tabs>
-            </TabPane>
+            <TreeView fx:id="tree" prefHeight="474.0" prefWidth="250.0" />
+            <StackPane fx:id="stack" prefHeight="475.0" prefWidth="553.0" />
          </children>
       </HBox>
    </children>
