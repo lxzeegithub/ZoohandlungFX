@@ -2,7 +2,6 @@ package com.lukas.zoohandlungfx;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -23,16 +22,26 @@ public class ZoohandlungController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         TreeItem<String> RootNode = new TreeItem<>("Zoohandlungen");
         RootNode.setExpanded(true);
+        tree.setEditable(true);
+        tree.setCellFactory((TreeView<String> p) -> new TextFieldTreeCellImpl());
         tree.setShowRoot(false);
         tree.setRoot(RootNode);
-        addNode();
+        TreeItem<String> zoohandlung = new TreeItem<>("Unbenannt");
+        TreeItem<String> tiere = new TreeItem<>("Tiere");
+        TreeItem<String> pfleger = new TreeItem<>("Pfleger");
+        TreeItem<String> einstellungen = new TreeItem<>("Einstellungen");
+        zoohandlung.getChildren().add(tiere);
+        zoohandlung.getChildren().add(pfleger);
+        zoohandlung.getChildren().add(einstellungen);
+        tree.getRoot().getChildren().add(zoohandlung);
         addStack();
 
 
     }
 
+    @FXML
     private void addZoohandlung() {
-        //addNode
+        addNode();
         //addStack
     }
 
@@ -45,6 +54,7 @@ public class ZoohandlungController implements Initializable {
         zoohandlung.getChildren().add(pfleger);
         zoohandlung.getChildren().add(einstellungen);
         tree.getRoot().getChildren().add(zoohandlung);
+        tree.edit(zoohandlung);
     }
 
     private Label createLabel(String text, Font font, int x, int y) {
@@ -60,6 +70,8 @@ public class ZoohandlungController implements Initializable {
         TabPane tiereTab = new TabPane();
         TabPane pflegerTab = new TabPane();
         AnchorPane settingsPane = new AnchorPane();
+        tiereTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        pflegerTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         //Neues Tier
         AnchorPane neuesTierPane = new AnchorPane();
@@ -107,4 +119,6 @@ public class ZoohandlungController implements Initializable {
         pane.getChildren().addAll(settingsPane, tiereTab, pflegerTab);
         stack.getChildren().add(pane);
     }
+
 }
+
