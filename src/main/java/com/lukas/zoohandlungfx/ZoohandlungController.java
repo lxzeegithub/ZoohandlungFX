@@ -1,5 +1,7 @@
 package com.lukas.zoohandlungfx;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -23,26 +25,25 @@ public class ZoohandlungController implements Initializable {
         TreeItem<String> RootNode = new TreeItem<>("Zoohandlungen");
         RootNode.setExpanded(true);
         tree.setEditable(true);
-        tree.setCellFactory((TreeView<String> p) -> new TextFieldTreeCellImpl());
+        tree.setCellFactory((TreeView<String> p) -> new TextFieldTreeCellImpl(stack));
         tree.setShowRoot(false);
         tree.setRoot(RootNode);
-        TreeItem<String> zoohandlung = new TreeItem<>("Unbenannt");
-        TreeItem<String> tiere = new TreeItem<>("Tiere");
-        TreeItem<String> pfleger = new TreeItem<>("Pfleger");
-        TreeItem<String> einstellungen = new TreeItem<>("Einstellungen");
-        zoohandlung.getChildren().add(tiere);
-        zoohandlung.getChildren().add(pfleger);
-        zoohandlung.getChildren().add(einstellungen);
-        tree.getRoot().getChildren().add(zoohandlung);
-        addStack();
-
-
+        tree.getSelectionModel().selectedItemProperty().addListener( new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+                if (selectedItem.getParent().getParent() != null) {
+                    changeStack(
+                            selectedItem.getParent().getParent().getChildren().indexOf(selectedItem.getParent()),
+                            selectedItem.getParent().getChildren().indexOf(selectedItem));
+                }
+            }
+        });
     }
-
     @FXML
     private void addZoohandlung() {
         addNode();
-        //addStack
+        addStack();
     }
 
     private void addNode() {
@@ -106,6 +107,10 @@ public class ZoohandlungController implements Initializable {
         //Pfleger
         AnchorPane pflegerPane = new AnchorPane();
 
+
+        //Settings
+
+
         Tab neuesTier = new Tab("Neues Tier", neuesTierPane);
         Tab tiere = new Tab("Tiere", tierePane);
         Tab neuerPfleger = new Tab("Neuer Pfleger", neuerPflegerPane);
@@ -120,5 +125,10 @@ public class ZoohandlungController implements Initializable {
         stack.getChildren().add(pane);
     }
 
+    private void changeStack(int parentIndex, int childIndex) {
+        System.out.println("Parent Index: " + parentIndex);
+        System.out.println("Child Index: " + childIndex);
+        System.out.println();
+    }
 }
 

@@ -4,16 +4,18 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 
 public final class TextFieldTreeCellImpl extends TreeCell<String> {
 
     private TextField textField;
     private final ContextMenu addMenu = new ContextMenu();
 
-    public TextFieldTreeCellImpl() {
+    public TextFieldTreeCellImpl(StackPane stack) {
         MenuItem addMenuItem = new MenuItem("Zoohandlung Entfernen");
         addMenu.getItems().add(addMenuItem);
         addMenuItem.setOnAction((ActionEvent t) -> {
+            stack.getChildren().remove(getTreeItem().getParent().getChildren().indexOf(getTreeItem()));
             getTreeItem().getParent().getChildren().remove(getTreeItem());
         });
     }
