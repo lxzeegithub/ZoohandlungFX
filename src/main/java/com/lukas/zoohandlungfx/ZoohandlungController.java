@@ -32,10 +32,12 @@ public class ZoohandlungController implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-                if (selectedItem.getParent().getParent() != null) {
-                    changeStack(
-                            selectedItem.getParent().getParent().getChildren().indexOf(selectedItem.getParent()),
-                            selectedItem.getParent().getChildren().indexOf(selectedItem));
+                if (selectedItem != null) {
+                    if (selectedItem.getParent().getParent() != null) {
+                        changeStack(
+                                selectedItem.getParent().getParent().getChildren().indexOf(selectedItem.getParent()),
+                                selectedItem.getParent().getChildren().indexOf(selectedItem));
+                    }
                 }
             }
         });
@@ -66,6 +68,39 @@ public class ZoohandlungController implements Initializable {
         return label;
     }
 
+    private TextField createTextField(String exampleText, int x, int y, int width, int height, boolean numeric) {
+        TextField field = new TextField();
+        field.setPromptText(exampleText);
+        field.setPrefWidth(width);
+        field.setPrefHeight(height);
+        field.setTranslateX(x);
+        field.setTranslateY(y);
+        if (numeric) {
+            field.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    if (!newValue.matches("\\d*")) {
+                        field.setText(newValue.replaceAll("[^\\d]", ""));
+                    }
+                }
+            });
+        }
+        return field;
+    }
+
+    private ComboBox<String> createDropdown(String exampleText, int x, int y, int width, int height, String... elements) {
+        ComboBox<String> combo = new ComboBox<>();
+        combo.setPromptText(exampleText);
+        combo.setPrefWidth(width);
+        combo.setPrefHeight(height);
+        combo.setTranslateX(x);
+        combo.setTranslateY(y);
+        for (String element : elements) {
+            combo.getItems().add(element);
+        }
+        return combo;
+    }
+
     private void addStack() {
         StackPane pane = new StackPane();
         TabPane tiereTab = new TabPane();
@@ -88,13 +123,24 @@ public class ZoohandlungController implements Initializable {
         Label tierArtLabel = createLabel("Tierart", new Font("Arial", 15), 120, 120);
         Label rasseTierLabel = createLabel("Rasse", new Font("Arial", 15), 120, 150);
         Label preisTierLabel = createLabel("Preis", new Font("Arial", 15), 120, 180);
+        TextField nameTierTextField = createTextField("Name eingeben", 200, 60, 150, 20, false);
+        TextField alterTierTextField = createTextField("Alter eingeben", 200, 90, 150, 20, true);
+        TextField rasseTierTextField = createTextField("Rasse eingeben", 200, 150, 150, 20, false);
+        TextField preisTierTextField = createTextField("Preis eingeben", 200, 180, 150, 20, true);
+        ComboBox<String> tierArtComboBox = createDropdown("Tierart auswählen", 200, 120, 150, 20, "Katze", "Hund");
+
         neuesTierPane.getChildren().addAll(
                 titelNeuesTier,
                 nameTierLabel,
                 alterTierLabel,
                 tierArtLabel,
                 rasseTierLabel,
-                preisTierLabel);
+                preisTierLabel,
+                nameTierTextField,
+                alterTierTextField,
+                rasseTierTextField,
+                preisTierTextField,
+                tierArtComboBox);
 
         //Tiere
         AnchorPane tierePane = new AnchorPane();
@@ -121,14 +167,26 @@ public class ZoohandlungController implements Initializable {
         tiereTab.setVisible(true);
         pflegerTab.setVisible(false);
         pane.setVisible(true);
-        pane.getChildren().addAll(settingsPane, tiereTab, pflegerTab);
+        pane.getChildren().addAll(tiereTab, pflegerTab, settingsPane);
         stack.getChildren().add(pane);
     }
 
     private void changeStack(int parentIndex, int childIndex) {
-        System.out.println("Parent Index: " + parentIndex);
-        System.out.println("Child Index: " + childIndex);
-        System.out.println();
+        for (int i = 0; i < tree.getRoot().getChildren().size(); i++) {
+            if (i == parentIndex) {
+                StackPane tempStack = (StackPane) stack.getChildren().get(parentIndex);
+                tempStack.setVisible(true);
+                for (int j = 0; j < tempStack.getChildren().size(); j++) {
+                    if (j == childIndex) {
+                        tempStack.getChildren().get(childIndex).setVisible(true);
+                    } else {
+                        tempStack.getChildren().get(j).setVisible(false);
+                    }
+                }
+            } else {
+                stack.getChildren().get(i).setVisible(false);
+            }
+        }
     }
 }
 
