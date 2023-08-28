@@ -2,6 +2,8 @@ package com.lukas.zoohandlungfx;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -12,6 +14,7 @@ import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public class ZoohandlungController implements Initializable {
 
@@ -41,7 +44,17 @@ public class ZoohandlungController implements Initializable {
                 }
             }
         });
+
+        //demo();
     }
+
+    private void demo() {
+        addZoohandlung();
+        addZoohandlung();
+        addZoohandlung();
+        tree.edit(null);
+    }
+
     @FXML
     private void addZoohandlung() {
         addNode();
@@ -101,6 +114,17 @@ public class ZoohandlungController implements Initializable {
         return combo;
     }
 
+    public Button createButton(String text, int x, int y, int width, int height, Font font, boolean defaultButton) {
+        Button button = new Button(text);
+        button.setTranslateX(x);
+        button.setTranslateY(y);
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+        button.setFont(font);
+        button.setDefaultButton(defaultButton);
+        return button;
+    }
+
     private void addStack() {
         StackPane pane = new StackPane();
         TabPane tiereTab = new TabPane();
@@ -128,7 +152,13 @@ public class ZoohandlungController implements Initializable {
         TextField rasseTierTextField = createTextField("Rasse eingeben", 200, 150, 150, 20, false);
         TextField preisTierTextField = createTextField("Preis eingeben", 200, 180, 150, 20, true);
         ComboBox<String> tierArtComboBox = createDropdown("Tierart auswählen", 200, 120, 150, 20, "Katze", "Hund");
-
+        Button neuesTierSubmit = createButton("Tier hinzufügen", 360, 380, 140, 30, new Font("Arial", 15), true);
+        neuesTierSubmit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                neuesTier();
+            }
+        });
         neuesTierPane.getChildren().addAll(
                 titelNeuesTier,
                 nameTierLabel,
@@ -140,7 +170,8 @@ public class ZoohandlungController implements Initializable {
                 alterTierTextField,
                 rasseTierTextField,
                 preisTierTextField,
-                tierArtComboBox);
+                tierArtComboBox,
+                neuesTierSubmit);
 
         //Tiere
         AnchorPane tierePane = new AnchorPane();
@@ -187,6 +218,10 @@ public class ZoohandlungController implements Initializable {
                 stack.getChildren().get(i).setVisible(false);
             }
         }
+    }
+
+    private void neuesTier() {
+
     }
 }
 
