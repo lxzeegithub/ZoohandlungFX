@@ -45,7 +45,7 @@ public class ZoohandlungController implements Initializable {
             }
         });
 
-        //demo();
+        demo();
     }
 
     private void demo() {
@@ -114,7 +114,7 @@ public class ZoohandlungController implements Initializable {
         return combo;
     }
 
-    public Button createButton(String text, int x, int y, int width, int height, Font font, boolean defaultButton) {
+    private Button createButton(String text, int x, int y, int width, int height, Font font, boolean defaultButton) {
         Button button = new Button(text);
         button.setTranslateX(x);
         button.setTranslateY(y);
@@ -123,6 +123,25 @@ public class ZoohandlungController implements Initializable {
         button.setFont(font);
         button.setDefaultButton(defaultButton);
         return button;
+    }
+
+    private Label createTitel(String text) {
+        Label label = new Label(text);
+        label.setFont(new Font("Arial", 24));
+        label.setMaxWidth(Double.MAX_VALUE);
+        AnchorPane.setLeftAnchor(label, 0.0);
+        AnchorPane.setRightAnchor(label, 0.0);
+        label.setAlignment(Pos.CENTER);
+        label.setTranslateY(10);
+        return label;
+    }
+
+    private CheckBox createCheckBox(boolean startValue, int x, int y) {
+        CheckBox check = new CheckBox();
+        check.setSelected(startValue);
+        check.setTranslateX(x);
+        check.setTranslateY(y);
+        return check;
     }
 
     private void addStack() {
@@ -135,13 +154,7 @@ public class ZoohandlungController implements Initializable {
 
         //Neues Tier
         AnchorPane neuesTierPane = new AnchorPane();
-        Label titelNeuesTier = new Label("Neues Tier");
-        titelNeuesTier.setFont(new Font("Arial", 24));
-        titelNeuesTier.setMaxWidth(Double.MAX_VALUE);
-        AnchorPane.setLeftAnchor(titelNeuesTier, 0.0);
-        AnchorPane.setRightAnchor(titelNeuesTier, 0.0);
-        titelNeuesTier.setAlignment(Pos.CENTER);
-        titelNeuesTier.setTranslateY(10);
+        Label titelNeuesTier = createTitel("Neues Tier");
         Label nameTierLabel = createLabel("Name", new Font("Arial", 15), 120, 60);
         Label alterTierLabel = createLabel("Alter", new Font("Arial", 15), 120, 90);
         Label tierArtLabel = createLabel("Tierart", new Font("Arial", 15), 120, 120);
@@ -175,18 +188,47 @@ public class ZoohandlungController implements Initializable {
 
         //Tiere
         AnchorPane tierePane = new AnchorPane();
-
+        Label titleTiere = createTitel("Tiere");
+        tierePane.getChildren().addAll(
+                titleTiere
+        );
 
         //Neuer Pfleger
         AnchorPane neuerPflegerPane = new AnchorPane();
-
+        Label titleNeuerPfleger = createTitel("Neuer Pfleger");
+        neuerPflegerPane.getChildren().addAll(
+                titleNeuerPfleger
+        );
 
         //Pfleger
         AnchorPane pflegerPane = new AnchorPane();
-
+        Label titlePfleger = createTitel("Pfleger");
+        pflegerPane.getChildren().addAll(
+                titlePfleger
+        );
 
         //Settings
+        Label titelSettings = createTitel("Einstellungen");
+        Label automatischeOeffnungszeitenLabel = createLabel("Automatische Öffnungszeiten", new Font("Arial", 14), 30, 60);
+        CheckBox automatischeOeffnungszeitenCheck = createCheckBox(false, 230, 60);
+        automatischeOeffnungszeitenCheck.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (automatischeOeffnungszeitenCheck.isSelected()) {
+                    //setTable
+                    System.out.println("Enable");
+                } else {
+                    //Diable Table
+                    System.out.println("Disable");
+                }
+            }
+        });
 
+        settingsPane.getChildren().addAll(
+                titelSettings,
+                automatischeOeffnungszeitenLabel,
+                automatischeOeffnungszeitenCheck
+        );
 
         Tab neuesTier = new Tab("Neues Tier", neuesTierPane);
         Tab tiere = new Tab("Tiere", tierePane);
@@ -221,6 +263,10 @@ public class ZoohandlungController implements Initializable {
     }
 
     private void neuesTier() {
+
+    }
+
+    private void neuerPfleger() {
 
     }
 }
