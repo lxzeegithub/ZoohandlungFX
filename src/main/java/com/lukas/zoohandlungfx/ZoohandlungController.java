@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -165,12 +166,12 @@ public class ZoohandlungController implements Initializable {
         TextField alterTierTextField = createTextField("Alter eingeben", 200, 90, 150, 20, true);
         TextField rasseTierTextField = createTextField("Rasse eingeben", 200, 150, 150, 20, false);
         TextField preisTierTextField = createTextField("Preis eingeben", 200, 180, 150, 20, true);
-        ComboBox<String> tierArtComboBox = createDropdown("Tierart auswählen", 200, 120, 150, 20, "Katze", "Hund");
+        ComboBox<String> tierArtComboBox = createDropdown("Tierart auswählen", 200, 120, 150, 20, "Katze", "Hund", "Vogel", "Hamster");
         Button neuesTierSubmit = createButton("Tier hinzufügen", 360, 380, 140, 30, new Font("Arial", 15), true);
         neuesTierSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                neuesTier();
+                neuesTier(nameTierTextField, alterTierTextField, rasseTierTextField, preisTierTextField, tierArtComboBox);
             }
         });
         neuesTierPane.getChildren().addAll(
@@ -226,7 +227,7 @@ public class ZoohandlungController implements Initializable {
         });
         oeffnungszeitenPane.setPrefSize(400, 250);
         oeffnungszeitenPane.setTranslateY(120);
-        Label oeffnenLabel = createLabel("Öffnen", new Font("Arial", 14), 30, 30);
+        Label oeffnenLabel = createLabel("Öffnen", new Font("Arial", 14), 30, 35);
         Label schliessenLabel = createLabel("Schließen", new Font("Arial", 14), 30, 65);
         Label montagLabel = createLabel("Mo", new Font("Arial", 14), 120, 5);
         Label dienstagLabel = createLabel("Di", new Font("Arial", 14), 180, 5);
@@ -235,6 +236,20 @@ public class ZoohandlungController implements Initializable {
         Label freitagLabel = createLabel("Fr", new Font("Arial", 14), 360, 5);
         Label samstagLabel = createLabel("Sa", new Font("Arial", 14), 420, 5);
         Label sonntagLabel = createLabel("So", new Font("Arial", 14), 480, 5);
+        TextField montagOeffnenField = createTextField("800", 106, 30, 50, 10, true);
+        TextField dienstagOeffnenField = createTextField("800", 166, 30, 50, 10, true);
+        TextField mittwochOeffnenField = createTextField("800", 226, 30, 50, 10, true);
+        TextField donnerstagOeffnenField = createTextField("800", 286, 30, 50, 10, true);
+        TextField freitagOeffnenField = createTextField("800", 346, 30, 50, 10, true);
+        TextField samstagOeffnenField = createTextField("800", 406, 30, 50, 10, true);
+        TextField sonntagOeffnenField = createTextField("800", 466, 30, 50, 10, true);
+        TextField montagSchliessenField = createTextField("1800", 106, 60, 50, 10, true);
+        TextField dienstagSchliessenField = createTextField("1800", 166, 60, 50, 10, true);
+        TextField mittwochSchliessenField = createTextField("1800", 226, 60, 50, 10, true);
+        TextField donnerstagSchliessenField = createTextField("1800", 286, 60, 50, 10, true);
+        TextField freitagSchliessenField = createTextField("1800", 346, 60, 50, 10, true);
+        TextField samstagSchliessenField = createTextField("1800", 406, 60, 50, 10, true);
+        TextField sonntagSchliessenField = createTextField("1800", 466, 60, 50, 10, true);
         oeffnungszeitenPane.getChildren().addAll(
                 oeffnenLabel,
                 schliessenLabel,
@@ -244,7 +259,21 @@ public class ZoohandlungController implements Initializable {
                 donnerstagLabel,
                 freitagLabel,
                 samstagLabel,
-                sonntagLabel
+                sonntagLabel,
+                montagOeffnenField,
+                dienstagOeffnenField,
+                mittwochOeffnenField,
+                donnerstagOeffnenField,
+                freitagOeffnenField,
+                samstagOeffnenField,
+                sonntagOeffnenField,
+                montagSchliessenField,
+                dienstagSchliessenField,
+                mittwochSchliessenField,
+                donnerstagSchliessenField,
+                freitagSchliessenField,
+                samstagSchliessenField,
+                sonntagSchliessenField
         );
         settingsPane.getChildren().addAll(
                 titelSettings,
@@ -285,8 +314,21 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuesTier() {
-
+    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart) {
+        if (name.getText() != "" && alter.getText() != "" && rasse.getText() != "" && preis.getText() != "" && tierart.getValue() != null) {
+            System.out.println(name.getText());
+            System.out.println(alter.getText());
+            System.out.println(rasse.getText());
+            System.out.println(preis.getText());
+            System.out.println(tierart.getValue());
+            System.out.println();
+            //Neues Tier erstellen und zum Array hinzufügen
+            tierart.setValue(null);
+            name.setText("");
+            alter.setText("");
+            rasse.setText("");
+            preis.setText("");
+        }
     }
 
     private void neuerPfleger() {
