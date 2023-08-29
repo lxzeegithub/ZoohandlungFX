@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 
@@ -211,23 +212,45 @@ public class ZoohandlungController implements Initializable {
         Label titelSettings = createTitel("Einstellungen");
         Label automatischeOeffnungszeitenLabel = createLabel("Automatische Öffnungszeiten", new Font("Arial", 14), 30, 60);
         CheckBox automatischeOeffnungszeitenCheck = createCheckBox(false, 230, 60);
+        Pane oeffnungszeitenPane = new Pane();
+        oeffnungszeitenPane.setDisable(true);
         automatischeOeffnungszeitenCheck.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (automatischeOeffnungszeitenCheck.isSelected()) {
-                    //setTable
-                    System.out.println("Enable");
+                    oeffnungszeitenPane.setDisable(false);
                 } else {
-                    //Diable Table
-                    System.out.println("Disable");
+                    oeffnungszeitenPane.setDisable(true);
                 }
             }
         });
-
+        oeffnungszeitenPane.setPrefSize(400, 250);
+        oeffnungszeitenPane.setTranslateY(120);
+        Label oeffnenLabel = createLabel("Öffnen", new Font("Arial", 14), 30, 30);
+        Label schliessenLabel = createLabel("Schließen", new Font("Arial", 14), 30, 65);
+        Label montagLabel = createLabel("Mo", new Font("Arial", 14), 120, 5);
+        Label dienstagLabel = createLabel("Di", new Font("Arial", 14), 180, 5);
+        Label mittwochLabel = createLabel("Mi", new Font("Arial", 14), 240, 5);
+        Label donnerstagLabel = createLabel("Do", new Font("Arial", 14), 300, 5);
+        Label freitagLabel = createLabel("Fr", new Font("Arial", 14), 360, 5);
+        Label samstagLabel = createLabel("Sa", new Font("Arial", 14), 420, 5);
+        Label sonntagLabel = createLabel("So", new Font("Arial", 14), 480, 5);
+        oeffnungszeitenPane.getChildren().addAll(
+                oeffnenLabel,
+                schliessenLabel,
+                montagLabel,
+                dienstagLabel,
+                mittwochLabel,
+                donnerstagLabel,
+                freitagLabel,
+                samstagLabel,
+                sonntagLabel
+        );
         settingsPane.getChildren().addAll(
                 titelSettings,
                 automatischeOeffnungszeitenLabel,
-                automatischeOeffnungszeitenCheck
+                automatischeOeffnungszeitenCheck,
+                oeffnungszeitenPane
         );
 
         Tab neuesTier = new Tab("Neues Tier", neuesTierPane);
