@@ -25,6 +25,9 @@ public class ZoohandlungController implements Initializable {
     @FXML
     private StackPane stack;
 
+    private Tier[][] tiere = new Tier[0][0];
+    private Pfleger[][] pfleger = new Pfleger[0][0];
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         TreeItem<String> RootNode = new TreeItem<>("Zoohandlungen");
@@ -198,8 +201,32 @@ public class ZoohandlungController implements Initializable {
         //Neuer Pfleger
         AnchorPane neuerPflegerPane = new AnchorPane();
         Label titleNeuerPfleger = createTitel("Neuer Pfleger");
+        Label namePflegerLabel = createLabel("Name", new Font("Arial", 15), 120, 60);
+        Label alterPflegerLabel = createLabel("Alter", new Font("Arial", 15), 120, 90);
+        Label geschlechtPflegerLabel = createLabel("Geschlecht", new Font("Arial", 15), 120, 120);
+        Label gehaltPflegerLabel = createLabel("Gehalt", new Font("Arial", 15), 120, 150);
+        TextField namePflegerTextField = createTextField("Name eingeben", 200, 60, 150, 20, false);
+        TextField alterPflegerTextField = createTextField("Alter eingeben", 200, 90, 150, 20, true);
+        TextField gehaltPflegerTextField = createTextField("Gehalt eingeben", 200, 150, 150, 20, true);
+        ComboBox<String> geschlechtPflegerComboBox = createDropdown("Geschlecht auswählen", 200, 120, 150, 20, "Mann", "Frau");
+        Button neuerPflegerSubmit = createButton("Pfleger hinzufügen", 360, 380, 150, 30, new Font("Arial", 15), true);
+        neuerPflegerSubmit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                neuerPfleger(namePflegerTextField, alterPflegerTextField, gehaltPflegerTextField, geschlechtPflegerComboBox);
+            }
+        });
         neuerPflegerPane.getChildren().addAll(
-                titleNeuerPfleger
+                titleNeuerPfleger,
+                namePflegerLabel,
+                alterPflegerLabel,
+                geschlechtPflegerLabel,
+                gehaltPflegerLabel,
+                namePflegerTextField,
+                alterPflegerTextField,
+                gehaltPflegerTextField,
+                geschlechtPflegerComboBox,
+                neuerPflegerSubmit
         );
 
         //Pfleger
@@ -225,6 +252,7 @@ public class ZoohandlungController implements Initializable {
                 }
             }
         });
+
         oeffnungszeitenPane.setPrefSize(400, 250);
         oeffnungszeitenPane.setTranslateY(120);
         Label oeffnenLabel = createLabel("Öffnen", new Font("Arial", 14), 30, 35);
@@ -250,6 +278,13 @@ public class ZoohandlungController implements Initializable {
         TextField freitagSchliessenField = createTextField("1800", 346, 60, 50, 10, true);
         TextField samstagSchliessenField = createTextField("1800", 406, 60, 50, 10, true);
         TextField sonntagSchliessenField = createTextField("1800", 466, 60, 50, 10, true);
+
+
+
+        //Öffnen Schließen Button mit Funktion
+
+
+
         oeffnungszeitenPane.getChildren().addAll(
                 oeffnenLabel,
                 schliessenLabel,
