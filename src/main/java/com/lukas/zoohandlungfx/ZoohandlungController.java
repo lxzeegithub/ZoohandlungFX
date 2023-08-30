@@ -331,8 +331,19 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuerPfleger() {
-
+    private void neuerPfleger(TextField name, TextField alter, TextField gehalt, ComboBox<String> geschlecht) {
+        if (name.getText() !=  "" && alter.getText() != "" && gehalt.getText() != "" && geschlecht.getValue() != null) {
+            System.out.println(name.getText());
+            System.out.println(alter.getText());
+            System.out.println(gehalt.getText());
+            System.out.println(geschlecht.getValue());
+            System.out.println();
+            //Neuen Pfleger erstellen und zum Array hinzufügen
+            geschlecht.setValue(null);
+            name.setText("");
+            alter.setText("");
+            gehalt.setText("");
+        }
     }
 }
 
