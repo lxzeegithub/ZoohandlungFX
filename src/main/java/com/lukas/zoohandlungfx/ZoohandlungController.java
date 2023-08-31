@@ -27,6 +27,7 @@ public class ZoohandlungController implements Initializable {
 
     private Tier[][] tiere = new Tier[0][0];
     private Pfleger[][] pfleger = new Pfleger[0][0];
+    private Zoohandlung[] zoohandlungen = new Zoohandlung[0];
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -50,7 +51,7 @@ public class ZoohandlungController implements Initializable {
             }
         });
 
-        demo();
+        //demo();
     }
 
     private void demo() {
