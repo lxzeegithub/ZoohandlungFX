@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -24,9 +25,6 @@ public class ZoohandlungController implements Initializable {
     private TreeView<String> tree;
     @FXML
     private StackPane stack;
-
-    private Tier[][] tiere = new Tier[0][0];
-    private Pfleger[][] pfleger = new Pfleger[0][0];
     private Zoohandlung[] zoohandlungen = new Zoohandlung[0];
 
     @Override
@@ -65,6 +63,7 @@ public class ZoohandlungController implements Initializable {
     private void addZoohandlung() {
         addNode();
         addStack();
+        //Zoohandlung zum Array Hinzufügen
     }
 
     private void addNode() {
@@ -380,6 +379,27 @@ public class ZoohandlungController implements Initializable {
             alter.setText("");
             gehalt.setText("");
         }
+    }
+
+    @FXML
+    public void addMoney() {
+        TextInputDialog td = new TextInputDialog("Betrag eigeben");
+        td.setContentText("Betrag in €");
+        td.getEditor().textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    td.getEditor().setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        td.setHeaderText(null);
+        td.setGraphic(null);
+        td.setTitle("Geld hinzufügen");
+        td.getDialogPane().setPrefWidth(250);
+        td.getDialogPane().setPrefHeight(90);
+        td.setResizable(false);
+        td.show();
     }
 }
 

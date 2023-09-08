@@ -45,7 +45,7 @@
                         <KeyCodeCombination alt="UP" code="K" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Geld hinzufügen">
+                  <MenuItem mnemonicParsing="false" onAction="#addMoney" text="Geld hinzufügen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
