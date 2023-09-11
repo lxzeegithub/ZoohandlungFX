@@ -67,7 +67,6 @@ public class TextFieldTreeCellImpl extends TreeCell<String> {
                 setGraphic(textField);
             } else {
                 setText(getString());
-                renameZoohandlung(getTreeItem().getParent().getChildren().indexOf(getTreeItem()), getString());
                 setGraphic(getTreeItem().getGraphic());
                 if (
                         !getTreeItem().isLeaf()&&getTreeItem().getParent().getParent() == null
@@ -83,6 +82,7 @@ public class TextFieldTreeCellImpl extends TreeCell<String> {
         textField.setOnKeyReleased((KeyEvent t) -> {
             if (t.getCode() == KeyCode.ENTER) {
                 commitEdit(textField.getText());
+                renameZoohandlung(getTreeItem().getParent().getChildren().indexOf(getTreeItem()), getString());
             } else if (t.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }

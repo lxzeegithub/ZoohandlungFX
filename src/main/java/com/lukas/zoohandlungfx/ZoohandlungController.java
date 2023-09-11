@@ -46,6 +46,9 @@ public class ZoohandlungController implements Initializable {
             @Override
             public void renameZoohandlung(int index, String name) {
                 zoohandlungen[index].setName(name);
+                for (int i = 0; i < zoohandlungen.length; i++) {
+                    System.out.println(zoohandlungen[i].getName());
+                }
             }
         });
         tree.setShowRoot(false);
@@ -76,10 +79,10 @@ public class ZoohandlungController implements Initializable {
 
     @FXML
     private void addZoohandlung() {
-        addNode();
-        addStack();
         zoohandlungen = Arrays.copyOf(zoohandlungen, zoohandlungen.length+1);
         zoohandlungen[zoohandlungen.length-1] = new Zoohandlung("Unbenannt");
+        addNode();
+        addStack();
     }
 
     private void addNode() {

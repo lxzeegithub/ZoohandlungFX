@@ -14,6 +14,7 @@ public class Pfleger {
 
     public void fuettern(Tier tier) {
         System.out.println("Das Tier " + tier.getName() + " wurde gefüttert");
+        tier.gibLaut();
     }
 
     public String getName() {
