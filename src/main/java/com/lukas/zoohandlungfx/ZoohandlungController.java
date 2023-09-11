@@ -26,6 +26,7 @@ public class ZoohandlungController implements Initializable {
     @FXML
     private StackPane stack;
     private Zoohandlung[] zoohandlungen = new Zoohandlung[0];
+    private int balance = 5000;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -399,7 +400,11 @@ public class ZoohandlungController implements Initializable {
         td.getDialogPane().setPrefWidth(250);
         td.getDialogPane().setPrefHeight(90);
         td.setResizable(false);
-        td.show();
+        td.showAndWait();
+        try {
+            balance = balance + Integer.parseInt(td.getEditor().getText());
+            System.out.println(balance);
+        } catch (RuntimeException e){}
     }
 }
 
