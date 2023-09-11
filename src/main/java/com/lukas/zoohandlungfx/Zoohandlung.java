@@ -1,5 +1,7 @@
 package com.lukas.zoohandlungfx;
 
+import java.util.Arrays;
+
 public class Zoohandlung {
 
     private boolean offen = false;
@@ -11,12 +13,31 @@ public class Zoohandlung {
         this.name = name;
     }
 
-    public void neuerPfleger() {
+    public void neuerPfleger(String name, String geschlecht, int alter, int gehalt) {
+        pfleger = Arrays.copyOf(pfleger, pfleger.length+1);
+        pfleger[pfleger.length-1] = new Pfleger(name, geschlecht, alter, gehalt);
+    }
+
+    public void neuesTier(String name, String rasse, int alter, int preis, String tierart) {
+        switch (tierart) {
+            case "Hund" -> addTier(new Hund(name, rasse, alter, preis));
+            case "Katze" -> addTier(new Katze(name, rasse, alter, preis));
+            case "Vogel" -> addTier(new Vogel(name, rasse, alter, preis));
+            case "Hamster" -> addTier(new Hamster(name, rasse, alter, preis));
+        }
+    }
+
+    public void tierEntfernen() {
 
     }
 
-    public void neuesTier() {
+    public void pflegerEntfernen() {
 
+    }
+
+    private void addTier(Tier tier) {
+        tiere = Arrays.copyOf(tiere, tiere.length+1);
+        tiere[tiere.length-1] = tier;
     }
 
     public Tier[] getTiere() {

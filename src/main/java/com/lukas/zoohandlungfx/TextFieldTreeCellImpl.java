@@ -6,7 +6,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
-public final class TextFieldTreeCellImpl extends TreeCell<String> {
+import java.util.Arrays;
+
+public class TextFieldTreeCellImpl extends TreeCell<String> {
 
     private TextField textField;
     private final ContextMenu addMenu = new ContextMenu();
@@ -15,9 +17,16 @@ public final class TextFieldTreeCellImpl extends TreeCell<String> {
         MenuItem addMenuItem = new MenuItem("Zoohandlung Entfernen");
         addMenu.getItems().add(addMenuItem);
         addMenuItem.setOnAction((ActionEvent t) -> {
+            removeZoohandlung(getTreeItem().getParent().getChildren().indexOf(getTreeItem()));
             stack.getChildren().remove(getTreeItem().getParent().getChildren().indexOf(getTreeItem()));
             getTreeItem().getParent().getChildren().remove(getTreeItem());
         });
+    }
+
+    public void removeZoohandlung(int index) {
+    }
+
+    public void renameZoohandlung(int index, String name) {
     }
 
     @Override
@@ -58,6 +67,7 @@ public final class TextFieldTreeCellImpl extends TreeCell<String> {
                 setGraphic(textField);
             } else {
                 setText(getString());
+                renameZoohandlung(getTreeItem().getParent().getChildren().indexOf(getTreeItem()), getString());
                 setGraphic(getTreeItem().getGraphic());
                 if (
                         !getTreeItem().isLeaf()&&getTreeItem().getParent().getParent() == null

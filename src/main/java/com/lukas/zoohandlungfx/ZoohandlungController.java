@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -33,7 +34,20 @@ public class ZoohandlungController implements Initializable {
         TreeItem<String> RootNode = new TreeItem<>("Zoohandlungen");
         RootNode.setExpanded(true);
         tree.setEditable(true);
-        tree.setCellFactory((TreeView<String> p) -> new TextFieldTreeCellImpl(stack));
+        tree.setCellFactory((TreeView<String> p) -> new TextFieldTreeCellImpl(stack) {
+            @Override
+            public void removeZoohandlung(int index) {
+                for (int i = index; i < zoohandlungen.length-1; i++){
+                    zoohandlungen[i] = zoohandlungen[i+1];
+                }
+                zoohandlungen = Arrays.copyOf(zoohandlungen, zoohandlungen.length-1);
+            }
+
+            @Override
+            public void renameZoohandlung(int index, String name) {
+                zoohandlungen[index].setName(name);
+            }
+        });
         tree.setShowRoot(false);
         tree.setRoot(RootNode);
         tree.getSelectionModel().selectedItemProperty().addListener( new ChangeListener() {
@@ -64,7 +78,8 @@ public class ZoohandlungController implements Initializable {
     private void addZoohandlung() {
         addNode();
         addStack();
-        //Zoohandlung zum Array Hinzufügen
+        zoohandlungen = Arrays.copyOf(zoohandlungen, zoohandlungen.length+1);
+        zoohandlungen[zoohandlungen.length-1] = new Zoohandlung("Unbenannt");
     }
 
     private void addNode() {
@@ -175,7 +190,7 @@ public class ZoohandlungController implements Initializable {
         neuesTierSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                neuesTier(nameTierTextField, alterTierTextField, rasseTierTextField, preisTierTextField, tierArtComboBox);
+                neuesTier(nameTierTextField, alterTierTextField, rasseTierTextField, preisTierTextField, tierArtComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane));
             }
         });
         neuesTierPane.getChildren().addAll(
@@ -192,12 +207,21 @@ public class ZoohandlungController implements Initializable {
                 tierArtComboBox,
                 neuesTierSubmit);
 
+
+
+
+
         //Tiere
         AnchorPane tierePane = new AnchorPane();
         Label titleTiere = createTitel("Tiere");
         tierePane.getChildren().addAll(
                 titleTiere
         );
+
+
+
+
+
 
         //Neuer Pfleger
         AnchorPane neuerPflegerPane = new AnchorPane();
@@ -214,7 +238,7 @@ public class ZoohandlungController implements Initializable {
         neuerPflegerSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                neuerPfleger(namePflegerTextField, alterPflegerTextField, gehaltPflegerTextField, geschlechtPflegerComboBox);
+                neuerPfleger(namePflegerTextField, alterPflegerTextField, gehaltPflegerTextField, geschlechtPflegerComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane));
             }
         });
         neuerPflegerPane.getChildren().addAll(
@@ -230,12 +254,22 @@ public class ZoohandlungController implements Initializable {
                 neuerPflegerSubmit
         );
 
+
+
+
+
+
         //Pfleger
         AnchorPane pflegerPane = new AnchorPane();
         Label titlePfleger = createTitel("Pfleger");
         pflegerPane.getChildren().addAll(
                 titlePfleger
         );
+
+
+
+
+
 
         //Settings
         Label titelSettings = createTitel("Einstellungen");
@@ -350,15 +384,9 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart) {
+    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart, int zooIndex) {
         if (name.getText() != "" && alter.getText() != "" && rasse.getText() != "" && preis.getText() != "" && tierart.getValue() != null) {
-            System.out.println(name.getText());
-            System.out.println(alter.getText());
-            System.out.println(rasse.getText());
-            System.out.println(preis.getText());
-            System.out.println(tierart.getValue());
-            System.out.println();
-            //Neues Tier erstellen und zum Array hinzufügen
+            zoohandlungen[zooIndex].neuesTier(name.getText(), rasse.getText(), Integer.parseInt(alter.getText()), Integer.parseInt(preis.getText()), tierart.getValue()); // Parameter Hinzufügen
             tierart.setValue(null);
             name.setText("");
             alter.setText("");
@@ -367,14 +395,9 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuerPfleger(TextField name, TextField alter, TextField gehalt, ComboBox<String> geschlecht) {
+    private void neuerPfleger(TextField name, TextField alter, TextField gehalt, ComboBox<String> geschlecht, int zooIndex) {
         if (name.getText() !=  "" && alter.getText() != "" && gehalt.getText() != "" && geschlecht.getValue() != null) {
-            System.out.println(name.getText());
-            System.out.println(alter.getText());
-            System.out.println(gehalt.getText());
-            System.out.println(geschlecht.getValue());
-            System.out.println();
-            //Neuen Pfleger erstellen und zum Array hinzufügen
+            zoohandlungen[zooIndex].neuerPfleger(name.getText(), geschlecht.getValue(), Integer.parseInt(alter.getText()), Integer.parseInt(gehalt.getText()));
             geschlecht.setValue(null);
             name.setText("");
             alter.setText("");
@@ -383,7 +406,7 @@ public class ZoohandlungController implements Initializable {
     }
 
     @FXML
-    public void addMoney() {
+    private void addMoney() {
         TextInputDialog td = new TextInputDialog("Betrag eigeben");
         td.setContentText("Betrag in €");
         td.getEditor().textProperty().addListener(new ChangeListener<String>() {
@@ -403,8 +426,41 @@ public class ZoohandlungController implements Initializable {
         td.showAndWait();
         try {
             balance = balance + Integer.parseInt(td.getEditor().getText());
-            System.out.println(balance);
         } catch (RuntimeException e){}
+    }
+
+    @FXML
+    private void removeMoney() {
+        TextInputDialog td = new TextInputDialog("Betrag eigeben");
+        td.setContentText("Betrag in €");
+        td.getEditor().textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    td.getEditor().setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        td.setHeaderText(null);
+        td.setGraphic(null);
+        td.setTitle("Geld entfernen");
+        td.getDialogPane().setPrefWidth(250);
+        td.getDialogPane().setPrefHeight(90);
+        td.setResizable(false);
+        td.showAndWait();
+        try {
+            balance = balance - Integer.parseInt(td.getEditor().getText());
+        } catch (RuntimeException e){}
+    }
+
+    @FXML
+    private void getMoney() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Kontostand");
+        alert.setHeaderText("Kontostand");
+        alert.setGraphic(null);
+        alert.setContentText("Betrag: " + balance);
+        alert.showAndWait();
     }
 }
 

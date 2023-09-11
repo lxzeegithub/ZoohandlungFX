@@ -40,7 +40,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Bank">
             <items>
-              <MenuItem mnemonicParsing="false" text="Kontostand">
+              <MenuItem mnemonicParsing="false" onAction="#getMoney" text="Kontostand">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="K" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -50,7 +50,7 @@
                         <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Geld entfernen">
+                  <MenuItem fx:id="removeMoney" mnemonicParsing="false" onAction="#removeMoney" text="Geld entfernen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
