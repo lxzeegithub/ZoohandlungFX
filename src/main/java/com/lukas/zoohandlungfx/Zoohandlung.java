@@ -8,6 +8,8 @@ public class Zoohandlung {
     private String name;
     private Tier[] tiere = new Tier[0];
     private Pfleger[] pfleger = new Pfleger[0];
+    private int[] oeffnungszeiten = {800, 800, 800, 800, 800, 800, 800, 1800, 1800, 1800, 1800, 1800, 1800, 1800};
+    private boolean automatisch = false;
 
     public Zoohandlung(String name) {
         this.name = name;
@@ -38,6 +40,22 @@ public class Zoohandlung {
     private void addTier(Tier tier) {
         tiere = Arrays.copyOf(tiere, tiere.length+1);
         tiere[tiere.length-1] = tier;
+    }
+
+    public void setAutomatisch(boolean automatisch) {
+        this.automatisch = automatisch;
+    }
+
+    public boolean getAutomatisch() {
+        return automatisch;
+    }
+
+    public void setOeffnungszeiten(int[] oeffnungszeiten) {
+        this.oeffnungszeiten = oeffnungszeiten;
+    }
+
+    public int[] getOeffnungszeiten() {
+        return oeffnungszeiten;
     }
 
     public Tier[] getTiere() {

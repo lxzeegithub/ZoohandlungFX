@@ -7,18 +7,17 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.function.Function;
 
 public class ZoohandlungController implements Initializable {
 
@@ -28,6 +27,8 @@ public class ZoohandlungController implements Initializable {
     private StackPane stack;
     private Zoohandlung[] zoohandlungen = new Zoohandlung[0];
     private int balance = 5000;
+    private final Image greenDot = new Image("green.png", 16,16,false, false);
+    private final Image redDot = new Image("red.png", 16, 16, false, false);
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -46,9 +47,6 @@ public class ZoohandlungController implements Initializable {
             @Override
             public void renameZoohandlung(int index, String name) {
                 zoohandlungen[index].setName(name);
-                for (int i = 0; i < zoohandlungen.length; i++) {
-                    System.out.println(zoohandlungen[i].getName());
-                }
             }
         });
         tree.setShowRoot(false);
@@ -86,7 +84,7 @@ public class ZoohandlungController implements Initializable {
     }
 
     private void addNode() {
-        TreeItem<String> zoohandlung = new TreeItem<>("Unbenannt");
+        TreeItem<String> zoohandlung = new TreeItem<>("Unbenannt", new ImageView(redDot));
         TreeItem<String> tiere = new TreeItem<>("Tiere");
         TreeItem<String> pfleger = new TreeItem<>("Pfleger");
         TreeItem<String> einstellungen = new TreeItem<>("Einstellungen");
@@ -284,8 +282,13 @@ public class ZoohandlungController implements Initializable {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (automatischeOeffnungszeitenCheck.isSelected()) {
+                    int index = automatischeOeffnungszeitenCheck.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(automatischeOeffnungszeitenCheck.getParent().getParent());
+                    zoohandlungen[index].setAutomatisch(true);
                     oeffnungszeitenPane.setDisable(false);
+
                 } else {
+                    int index = automatischeOeffnungszeitenCheck.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(automatischeOeffnungszeitenCheck.getParent().getParent());
+                    zoohandlungen[index].setAutomatisch(false);
                     oeffnungszeitenPane.setDisable(true);
                 }
             }
@@ -316,11 +319,51 @@ public class ZoohandlungController implements Initializable {
         TextField freitagSchliessenField = createTextField("1800", 346, 60, 50, 10, true);
         TextField samstagSchliessenField = createTextField("1800", 406, 60, 50, 10, true);
         TextField sonntagSchliessenField = createTextField("1800", 466, 60, 50, 10, true);
+        Button oeffnungsZeitenButton = createButton("Speichern", 380, 100, 110, 30, new Font("Arial",15), false);
+        oeffnungsZeitenButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                int index = oeffnungsZeitenButton.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(oeffnungsZeitenButton.getParent().getParent());
+                zoohandlungen[index].setOeffnungszeiten(new int[]{
+                        Integer.parseInt(montagOeffnenField.getText()),
+                        Integer.parseInt(dienstagOeffnenField.getText()),
+                        Integer.parseInt(mittwochOeffnenField.getText()),
+                        Integer.parseInt(donnerstagOeffnenField.getText()),
+                        Integer.parseInt(freitagOeffnenField.getText()),
+                        Integer.parseInt(samstagOeffnenField.getText()),
+                        Integer.parseInt(sonntagOeffnenField.getText()),
+                        Integer.parseInt(montagSchliessenField.getText()),
+                        Integer.parseInt(dienstagSchliessenField.getText()),
+                        Integer.parseInt(mittwochSchliessenField.getText()),
+                        Integer.parseInt(donnerstagSchliessenField.getText()),
+                        Integer.parseInt(freitagSchliessenField.getText()),
+                        Integer.parseInt(samstagSchliessenField.getText()),
+                        Integer.parseInt(sonntagSchliessenField.getText())
+                });
+            }
+        });
 
-
-
-        //Öffnen Schließen Button mit Funktion
-
+        Label manuelOpen = createLabel("Manuelles Öffnen", new Font("Arial", 14), 30, 280);
+        Button oeffnenButton = createButton("Öffnen", 160, 273, 80, 30, new Font("Arial", 15), false);
+        oeffnenButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                int index = oeffnenButton.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(oeffnenButton.getParent().getParent());
+                tree.getRoot().getChildren().get(index).setGraphic(new ImageView(greenDot));
+                tree.refresh();
+                zoohandlungen[index].oeffnen();
+            }
+        });
+        Button schliessenButton = createButton("Schließen", 260, 273, 80, 30, new Font("Arial", 15), false);
+        schliessenButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                int index = schliessenButton.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(schliessenButton.getParent().getParent());
+                tree.getRoot().getChildren().get(index).setGraphic(new ImageView(redDot));
+                tree.refresh();
+                zoohandlungen[index].schliessen();
+            }
+        });
 
 
         oeffnungszeitenPane.getChildren().addAll(
@@ -346,13 +389,17 @@ public class ZoohandlungController implements Initializable {
                 donnerstagSchliessenField,
                 freitagSchliessenField,
                 samstagSchliessenField,
-                sonntagSchliessenField
+                sonntagSchliessenField,
+                oeffnungsZeitenButton
         );
         settingsPane.getChildren().addAll(
                 titelSettings,
                 automatischeOeffnungszeitenLabel,
                 automatischeOeffnungszeitenCheck,
-                oeffnungszeitenPane
+                oeffnungszeitenPane,
+                manuelOpen,
+                oeffnenButton,
+                schliessenButton
         );
 
         Tab neuesTier = new Tab("Neues Tier", neuesTierPane);
@@ -405,6 +452,24 @@ public class ZoohandlungController implements Initializable {
             name.setText("");
             alter.setText("");
             gehalt.setText("");
+        }
+    }
+
+    @FXML
+    private void openAll() {
+        for (int i = 0; i < tree.getRoot().getChildren().size(); i++) {
+            tree.getRoot().getChildren().get(i).setGraphic(new ImageView(greenDot));
+            zoohandlungen[i].oeffnen();
+            tree.refresh();
+        }
+    }
+
+    @FXML
+    private void closeAll() {
+        for (int i = 0; i < tree.getRoot().getChildren().size(); i++) {
+            tree.getRoot().getChildren().get(i).setGraphic(new ImageView(redDot));
+            zoohandlungen[i].schliessen();
+            tree.refresh();
         }
     }
 
@@ -465,5 +530,7 @@ public class ZoohandlungController implements Initializable {
         alert.setContentText("Betrag: " + balance);
         alert.showAndWait();
     }
+
+
 }
 

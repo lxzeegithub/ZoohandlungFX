@@ -15,12 +15,12 @@
         <menus>
             <Menu mnemonicParsing="false" text="Mangement">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Alle Öffnen">
+                  <MenuItem mnemonicParsing="false" onAction="#openAll" text="Alle Öffnen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Alle Schließen">
+                  <MenuItem mnemonicParsing="false" onAction="#closeAll" text="Alle Schließen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
