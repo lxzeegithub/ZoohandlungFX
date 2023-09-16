@@ -65,7 +65,7 @@ public class ZoohandlungController implements Initializable {
             }
         });
 
-        //demo();
+        demo();
     }
 
     private void demo() {
@@ -215,8 +215,42 @@ public class ZoohandlungController implements Initializable {
         //Tiere
         AnchorPane tierePane = new AnchorPane();
         Label titleTiere = createTitel("Tiere");
+        ComboBox<String> searchDropdown = createDropdown("Suche", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
+        TextField searchBar = createTextField("Suchen", 150, 50, 360, 20, false);
+        TableView<String> table = new TableView<>();
+        table.setEditable(true);
+        table.setPrefWidth(480);
+        table.setPrefHeight(300);
+        table.setTranslateX(30);
+        table.setTranslateY(80);
+        TableColumn nameColumn = new TableColumn("Name");
+        nameColumn.setReorderable(false);
+        nameColumn.setResizable(false);
+        nameColumn.setPrefWidth(120);
+        TableColumn alterColumn = new TableColumn("Alter");
+        alterColumn.setReorderable(false);
+        alterColumn.setResizable(false);
+        alterColumn.setPrefWidth(70);
+        TableColumn tierartColumn = new TableColumn("Tierart");
+        tierartColumn.setReorderable(false);
+        tierartColumn.setResizable(false);
+        tierartColumn.setEditable(false);
+        tierartColumn.setPrefWidth(100);
+        TableColumn rasseColumn = new TableColumn("Rasse");
+        rasseColumn.setReorderable(false);
+        rasseColumn.setResizable(false);
+        rasseColumn.setEditable(false);
+        rasseColumn.setPrefWidth(100);
+        TableColumn preisColumn = new TableColumn("Preis");
+        preisColumn.setReorderable(false);
+        preisColumn.setResizable(false);
+        preisColumn.setPrefWidth(90);
+        table.getColumns().addAll(nameColumn, alterColumn, tierartColumn, rasseColumn, preisColumn);
         tierePane.getChildren().addAll(
-                titleTiere
+                titleTiere,
+                searchDropdown,
+                searchBar,
+                table
         );
 
 
