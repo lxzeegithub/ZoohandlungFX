@@ -280,34 +280,35 @@ public class ZoohandlungController implements Initializable {
                 System.out.println(t1);
             }
         });
+
         nameColumn.sortTypeProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
-
+                System.out.println(nameColumn.getText() + " " + nameColumn.getSortType());
             }
         });
         alterColumn.sortTypeProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
-
+                System.out.println(alterColumn.getText() + " " + alterColumn.getSortType());
             }
         });
         tierartColumn.sortTypeProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
-
+                System.out.println(tierartColumn.getText() + " " + tierartColumn.getSortType());
             }
         });
         rasseColumn.sortTypeProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
-
+                System.out.println(rasseColumn.getText() + " " + rasseColumn.getSortType());
             }
         });
         preisColumn.sortTypeProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
-
+                System.out.println(preisColumn.getText() + " " + preisColumn.getSortType());
             }
         });
 
