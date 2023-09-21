@@ -215,8 +215,6 @@ public class ZoohandlungController implements Initializable {
         //Tiere
         AnchorPane tierePane = new AnchorPane();
         Label titleTiere = createTitel("Tiere");
-        ComboBox<String> searchDropdown = createDropdown("Suche", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
-        TextField searchBar = createTextField("Suchen", 150, 50, 360, 20, false);
         TableView<String> table = new TableView<>();
         table.setEditable(true);
         table.setPrefWidth(480);
@@ -246,6 +244,73 @@ public class ZoohandlungController implements Initializable {
         preisColumn.setResizable(false);
         preisColumn.setPrefWidth(90);
         table.getColumns().addAll(nameColumn, alterColumn, tierartColumn, rasseColumn, preisColumn);
+        final boolean[] numberListenerActive = {false}; // muss wegen zugriff aus inner class change listener
+        TextField searchBar = createTextField("Suchen", 150, 50, 360, 20, false);
+        searchBar.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (!numberListenerActive[0]) { //Change Listener Suchleiste update sortieren
+                    System.out.println(t1);
+                }
+            }
+        });
+        ComboBox<String> searchDropdown = createDropdown("", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
+        searchDropdown.setValue("Name");
+        ChangeListener<String> searchNumberListener = new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    searchBar.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+                System.out.println(searchBar.getText()); //Change Listenerr Suchleiste update Sortieren
+            }
+        };
+        searchDropdown.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if ((t1 == "Alter" || t1 == "Preis") && !numberListenerActive[0]) {
+                    searchBar.setText("");
+                    searchBar.textProperty().addListener(searchNumberListener);
+                    numberListenerActive[0] = true;
+                } else if (numberListenerActive[0]){
+                    searchBar.textProperty().removeListener(searchNumberListener);
+                    numberListenerActive[0] = false;
+                }
+                // Dropdown Change Listener update sortieren
+                System.out.println(t1);
+            }
+        });
+        nameColumn.sortTypeProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+
+            }
+        });
+        alterColumn.sortTypeProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+
+            }
+        });
+        tierartColumn.sortTypeProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+
+            }
+        });
+        rasseColumn.sortTypeProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+
+            }
+        });
+        preisColumn.sortTypeProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+
+            }
+        });
+
         tierePane.getChildren().addAll(
                 titleTiere,
                 searchDropdown,
@@ -477,6 +542,10 @@ public class ZoohandlungController implements Initializable {
         pane.setVisible(true);
         pane.getChildren().addAll(tiereTab, pflegerTab, settingsPane);
         stack.getChildren().add(pane);
+    }
+
+    private void updateTableTiere() {
+
     }
 
     private void changeStack(int parentIndex, int childIndex) {
