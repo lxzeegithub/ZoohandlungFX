@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -173,6 +174,7 @@ public class ZoohandlungController implements Initializable {
         AnchorPane settingsPane = new AnchorPane();
         tiereTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         pflegerTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        TableView<Object> table = new TableView<>();
 
         //Neues Tier
         AnchorPane neuesTierPane = new AnchorPane();
@@ -191,7 +193,7 @@ public class ZoohandlungController implements Initializable {
         neuesTierSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                neuesTier(nameTierTextField, alterTierTextField, rasseTierTextField, preisTierTextField, tierArtComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane));
+                neuesTier(nameTierTextField, alterTierTextField, rasseTierTextField, preisTierTextField, tierArtComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane), table);
             }
         });
         neuesTierPane.getChildren().addAll(
@@ -215,54 +217,69 @@ public class ZoohandlungController implements Initializable {
         //Tiere
         AnchorPane tierePane = new AnchorPane();
         Label titleTiere = createTitel("Tiere");
-        TableView<String> table = new TableView<>();
+        TextField searchBar = createTextField("Suchen", 150, 50, 360, 20, false);
+        ComboBox<String> searchDropdown = createDropdown("", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
+        searchDropdown.setValue("Name");
         table.setEditable(true);
         table.setPrefWidth(480);
         table.setPrefHeight(300);
         table.setTranslateX(30);
         table.setTranslateY(80);
+        table.sortPolicyProperty().set(t -> {
+
+            return true;            //Sortieren mit suche
+        });
         TableColumn nameColumn = new TableColumn("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameColumn.setReorderable(false);
         nameColumn.setResizable(false);
         nameColumn.setPrefWidth(120);
         TableColumn alterColumn = new TableColumn("Alter");
+        alterColumn.setCellValueFactory(new PropertyValueFactory<>("alter"));
         alterColumn.setReorderable(false);
         alterColumn.setResizable(false);
         alterColumn.setPrefWidth(70);
         TableColumn tierartColumn = new TableColumn("Tierart");
+        tierartColumn.setCellValueFactory(new PropertyValueFactory<>("tierart"));
         tierartColumn.setReorderable(false);
         tierartColumn.setResizable(false);
         tierartColumn.setEditable(false);
         tierartColumn.setPrefWidth(100);
         TableColumn rasseColumn = new TableColumn("Rasse");
+        rasseColumn.setCellValueFactory(new PropertyValueFactory<>("rasse"));
         rasseColumn.setReorderable(false);
         rasseColumn.setResizable(false);
         rasseColumn.setEditable(false);
         rasseColumn.setPrefWidth(100);
         TableColumn preisColumn = new TableColumn("Preis");
+        preisColumn.setCellValueFactory(new PropertyValueFactory<>("preis"));
         preisColumn.setReorderable(false);
         preisColumn.setResizable(false);
         preisColumn.setPrefWidth(90);
         table.getColumns().addAll(nameColumn, alterColumn, tierartColumn, rasseColumn, preisColumn);
-        final boolean[] numberListenerActive = {false}; // muss wegen zugriff aus inner class change listener
-        TextField searchBar = createTextField("Suchen", 150, 50, 360, 20, false);
+        final boolean[] numberListenerActive = {false};
+        final boolean[] numberListenerTriggered = {false};
+
         searchBar.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                if (!numberListenerActive[0]) { //Change Listener Suchleiste update sortieren
-                    System.out.println(t1);
+                if (!numberListenerActive[0]) {
+                    table.sort();
                 }
             }
         });
-        ComboBox<String> searchDropdown = createDropdown("", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
-        searchDropdown.setValue("Name");
         ChangeListener<String> searchNumberListener = new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (numberListenerTriggered[0]) {
+                    numberListenerTriggered[0] = false;
+                    return;
+                }
                 if (!newValue.matches("\\d*")) {
+                    numberListenerTriggered[0] = true;
                     searchBar.setText(newValue.replaceAll("[^\\d]", ""));
                 }
-                System.out.println(searchBar.getText()); //Change Listenerr Suchleiste update Sortieren
+                table.sort();
             }
         };
         searchDropdown.valueProperty().addListener(new ChangeListener<String>() {
@@ -272,45 +289,15 @@ public class ZoohandlungController implements Initializable {
                     searchBar.setText("");
                     searchBar.textProperty().addListener(searchNumberListener);
                     numberListenerActive[0] = true;
-                } else if (numberListenerActive[0]){
+                } else if (t1 != "Alter" && t1 != "Preis" && numberListenerActive[0]){
                     searchBar.textProperty().removeListener(searchNumberListener);
                     numberListenerActive[0] = false;
                 }
-                // Dropdown Change Listener update sortieren
-                System.out.println(t1);
+                table.sort();
             }
         });
 
-        nameColumn.sortTypeProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object t1) {
-                System.out.println(nameColumn.getText() + " " + nameColumn.getSortType());
-            }
-        });
-        alterColumn.sortTypeProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object t1) {
-                System.out.println(alterColumn.getText() + " " + alterColumn.getSortType());
-            }
-        });
-        tierartColumn.sortTypeProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object t1) {
-                System.out.println(tierartColumn.getText() + " " + tierartColumn.getSortType());
-            }
-        });
-        rasseColumn.sortTypeProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object t1) {
-                System.out.println(rasseColumn.getText() + " " + rasseColumn.getSortType());
-            }
-        });
-        preisColumn.sortTypeProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object t1) {
-                System.out.println(preisColumn.getText() + " " + preisColumn.getSortType());
-            }
-        });
+
 
         tierePane.getChildren().addAll(
                 titleTiere,
@@ -363,37 +350,9 @@ public class ZoohandlungController implements Initializable {
         //Pfleger
         AnchorPane pflegerPane = new AnchorPane();
         Label titlePfleger = createTitel("Pfleger");
-        ComboBox<String> searchDropDownPfleger = createDropdown("Suche", 30, 50, 100, 20, "Name", "Alter", "Tierart", "Rasse", "Preis");
-        TextField searchBarPfleger = createTextField("Suchen", 150, 50, 360, 20, false);
-        TableView<String> tablePfleger = new TableView<>();
-        tablePfleger.setEditable(true);
-        tablePfleger.setPrefWidth(480);
-        tablePfleger.setPrefHeight(300);
-        tablePfleger.setTranslateX(30);
-        tablePfleger.setTranslateY(80);
-        TableColumn nameColumnPfleger = new TableColumn("Name");
-        nameColumnPfleger.setReorderable(false);
-        nameColumnPfleger.setResizable(false);
-        nameColumnPfleger.setPrefWidth(150);
-        TableColumn alterColumnPfleger = new TableColumn("Alter");
-        alterColumnPfleger.setReorderable(false);
-        alterColumnPfleger.setResizable(false);
-        alterColumnPfleger.setPrefWidth(100);
-        TableColumn geschlechtColumnPfleger = new TableColumn("Geschlecht");
-        geschlechtColumnPfleger.setReorderable(false);
-        geschlechtColumnPfleger.setResizable(false);
-        geschlechtColumnPfleger.setEditable(false);
-        geschlechtColumnPfleger.setPrefWidth(120);
-        TableColumn gehaltColumnPfleger = new TableColumn("Gehalt");
-        gehaltColumnPfleger.setReorderable(false);
-        gehaltColumnPfleger.setResizable(false);
-        gehaltColumnPfleger.setPrefWidth(110);
-        tablePfleger.getColumns().addAll(nameColumnPfleger, alterColumnPfleger, geschlechtColumnPfleger, gehaltColumnPfleger);
+
         pflegerPane.getChildren().addAll(
-                titlePfleger,
-                searchDropDownPfleger,
-                searchBarPfleger,
-                tablePfleger
+                titlePfleger
         );
 
 
@@ -545,10 +504,6 @@ public class ZoohandlungController implements Initializable {
         stack.getChildren().add(pane);
     }
 
-    private void updateTableTiere() {
-
-    }
-
     private void changeStack(int parentIndex, int childIndex) {
         for (int i = 0; i < tree.getRoot().getChildren().size(); i++) {
             if (i == parentIndex) {
@@ -567,9 +522,10 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart, int zooIndex) {
+    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart, int zooIndex, TableView<Object> table) {
         if (name.getText() != "" && alter.getText() != "" && rasse.getText() != "" && preis.getText() != "" && tierart.getValue() != null) {
             zoohandlungen[zooIndex].neuesTier(name.getText(), rasse.getText(), Integer.parseInt(alter.getText()), Integer.parseInt(preis.getText()), tierart.getValue()); // Parameter Hinzufügen
+            table.getItems().add(zoohandlungen[zooIndex].getTiere()[zoohandlungen[zooIndex].getTiere().length-1]);
             tierart.setValue(null);
             name.setText("");
             alter.setText("");

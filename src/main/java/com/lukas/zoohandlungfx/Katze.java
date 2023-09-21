@@ -13,4 +13,8 @@ public class Katze extends Tier {
     public void fauchen() {
         System.out.println("Katze hat gefaucht");
     }
+
+    public String getTierart() {
+        return "Katze";
+    }
 }

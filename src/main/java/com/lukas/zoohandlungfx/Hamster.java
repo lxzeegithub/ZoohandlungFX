@@ -13,4 +13,8 @@ public class Hamster extends Tier {
     public void rennen() {
         System.out.println("Hamster rennt los");
     }
+
+    public String getTierart() {
+        return "Hamster";
+    }
 }

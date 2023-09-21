@@ -13,6 +13,7 @@ public abstract class Tier {
     }
 
     public abstract void gibLaut();
+    public abstract String getTierart();
 
     public void seiWuetend() {
         gibLaut();

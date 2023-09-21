@@ -13,4 +13,8 @@ public class Hund extends Tier {
     public void platz() {
         System.out.println("Hund hat Platz gemacht");
     }
+
+    public String getTierart() {
+        return "Hund";
+    }
 }

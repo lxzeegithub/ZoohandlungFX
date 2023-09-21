@@ -13,4 +13,8 @@ public class Vogel extends Tier {
     public void fliegen() {
         System.out.println("Vogel ist geflogen");
     }
+
+    public String getTierart() {
+        return "Vogel";
+    }
 }
