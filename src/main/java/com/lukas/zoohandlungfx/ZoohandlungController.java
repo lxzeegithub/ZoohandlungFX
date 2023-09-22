@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -226,8 +227,9 @@ public class ZoohandlungController implements Initializable {
         table.setTranslateX(30);
         table.setTranslateY(80);
         table.sortPolicyProperty().set(t -> {
-
-            return true;            //Sortieren mit suche
+            System.out.println(searchBar.getText());
+            System.out.println(searchDropdown.getValue());
+            return true;
         });
         TableColumn nameColumn = new TableColumn("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
