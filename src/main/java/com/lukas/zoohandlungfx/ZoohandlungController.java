@@ -226,11 +226,6 @@ public class ZoohandlungController implements Initializable {
         table.setPrefHeight(300);
         table.setTranslateX(30);
         table.setTranslateY(80);
-        table.sortPolicyProperty().set(t -> {
-            System.out.println(searchBar.getText());
-            System.out.println(searchDropdown.getValue());
-            return true;
-        });
         TableColumn nameColumn = new TableColumn("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameColumn.setReorderable(false);
@@ -259,6 +254,29 @@ public class ZoohandlungController implements Initializable {
         preisColumn.setResizable(false);
         preisColumn.setPrefWidth(90);
         table.getColumns().addAll(nameColumn, alterColumn, tierartColumn, rasseColumn, preisColumn);
+        table.sortPolicyProperty().set(t -> {
+            TableColumn sortingColumn = null;
+            TableColumn.SortType type = null;
+            String searchBarText = searchBar.getText();
+            String searchDropdownText = searchDropdown.getValue();
+            if (table.getSortOrder().size() > 0) {
+                sortingColumn = table.getSortOrder().get(0);
+                type = table.getColumns().get(table.getColumns().indexOf(sortingColumn)).getSortType();
+            }
+
+            if (!searchBarText.equals("") && sortingColumn == null) {
+                System.out.println("Nur Suchen");
+                System.out.println("Suche nach: " + searchBarText + "   Spalte: " + searchDropdownText);
+            } else if (searchBarText.equals("") && sortingColumn != null) {
+                System.out.println("Nur Sortieren");
+                System.out.println("Sortieren Nach: " + sortingColumn.getText() + "   Reihenfolge: " + type);
+            } else if (!searchBarText.equals("") && sortingColumn != null) {
+                System.out.println("Suchen und Sortieren");
+                System.out.println("Suche nach: " + searchBarText + "   Spalte: " + searchDropdownText + "   Sorteiren Nach: " + sortingColumn.getText() + "   Reihenfolge: " + type);
+            }
+
+            return true;
+        });
         final boolean[] numberListenerActive = {false};
         final boolean[] numberListenerTriggered = {false};
 
