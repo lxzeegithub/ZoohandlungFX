@@ -29,11 +29,11 @@ public class Zoohandlung {
         }
     }
 
-    public void tierEntfernen() {
+    public void tierEntfernen(Tier tier) {
 
     }
 
-    public void pflegerEntfernen() {
+    public void pflegerEntfernen(Pfleger pfleger) {
 
     }
 

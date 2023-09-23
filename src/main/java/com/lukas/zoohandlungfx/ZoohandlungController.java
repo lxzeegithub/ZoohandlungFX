@@ -7,15 +7,18 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -31,6 +34,14 @@ public class ZoohandlungController implements Initializable {
     private int balance = 5000;
     private final Image greenDot = new Image("green.png", 16,16,false, false);
     private final Image redDot = new Image("red.png", 16, 16, false, false);
+
+    private final int UP = 0;
+    private final int DOWN = 1;
+    private final int NAME = 0;
+    private final int ALTER = 1;
+    private final int TIERART = 2;
+    private final int RASSE = 3;
+    private final int PREIS = 4;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -75,6 +86,17 @@ public class ZoohandlungController implements Initializable {
         addZoohandlung();
         addZoohandlung();
         tree.edit(null);
+        zoohandlungen[0].neuesTier("Karl", "Perscheid", 12, 100, "Hund");
+        zoohandlungen[0].neuesTier("Emil", "Werner", 16, 250, "Vogel");
+        zoohandlungen[0].neuesTier("Daniel", "Baur", 5, 14, "Katze");
+        zoohandlungen[0].neuesTier("Florian", "Rex", 88, 56, "Hamster");
+        zoohandlungen[0].neuesTier("Mika", "Kuppke", 54, 11, "Hund");
+        StackPane stackPane = (StackPane) stack.getChildren().get(0);
+        TabPane tab = (TabPane) stackPane.getChildren().get(0);
+        Tab tiereTab = tab.getTabs().get(1);
+        AnchorPane tierePane = (AnchorPane) tiereTab.getContent();
+        TableView table = (TableView) tierePane.getChildren().get(3);
+        table.getItems().setAll(zoohandlungen[0].getTiere());
     }
 
     @FXML
@@ -171,11 +193,12 @@ public class ZoohandlungController implements Initializable {
     private void addStack() {
         StackPane pane = new StackPane();
         TabPane tiereTab = new TabPane();
+
         TabPane pflegerTab = new TabPane();
         AnchorPane settingsPane = new AnchorPane();
         tiereTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         pflegerTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        TableView<Object> table = new TableView<>();
+        TableView<Tier> table = new TableView<>();
 
         //Neues Tier
         AnchorPane neuesTierPane = new AnchorPane();
@@ -259,22 +282,58 @@ public class ZoohandlungController implements Initializable {
             TableColumn.SortType type = null;
             String searchBarText = searchBar.getText();
             String searchDropdownText = searchDropdown.getValue();
+            int zooIndex;
+            try {
+                zooIndex = pane.getParent().getChildrenUnmodifiable().indexOf(pane);
+            } catch(Exception e) {
+                return true;
+            }
             if (table.getSortOrder().size() > 0) {
                 sortingColumn = table.getSortOrder().get(0);
                 type = table.getColumns().get(table.getColumns().indexOf(sortingColumn)).getSortType();
             }
+            Tier[] workingArray = zoohandlungen[zooIndex].getTiere();
 
-            if (!searchBarText.equals("") && sortingColumn == null) {
-                System.out.println("Nur Suchen");
-                System.out.println("Suche nach: " + searchBarText + "   Spalte: " + searchDropdownText);
-            } else if (searchBarText.equals("") && sortingColumn != null) {
-                System.out.println("Nur Sortieren");
-                System.out.println("Sortieren Nach: " + sortingColumn.getText() + "   Reihenfolge: " + type);
-            } else if (!searchBarText.equals("") && sortingColumn != null) {
-                System.out.println("Suchen und Sortieren");
-                System.out.println("Suche nach: " + searchBarText + "   Spalte: " + searchDropdownText + "   Sorteiren Nach: " + sortingColumn.getText() + "   Reihenfolge: " + type);
+            //Suchen
+            if (!searchBarText.equals("")) {
+                Tier[] searched = new Tier[workingArray.length];
+                int help = 0;
+                for (int i = 0; i < workingArray.length; i++) {
+                    if (lineareSuche(workingArray[i], searchBarText, searchDropdownText)) {
+                        searched[help] = workingArray[i];
+                        help++;
+                    }
+                }
+                workingArray = searched;
+                for (int i = 0; i < workingArray.length; i++) {
+                    if (workingArray[i] == null) {
+                        workingArray = Arrays.copyOf(workingArray, workingArray.length-(workingArray.length-i));
+                        break;
+                    }
+                }
             }
 
+            if (sortingColumn != null) {
+                if (type == TableColumn.SortType.ASCENDING) {
+                    switch (sortingColumn.getText()) {
+                        case "Name" -> quickSort(workingArray, 0, workingArray.length-1, NAME, UP);
+                        case "Alter" -> quickSort(workingArray, 0, workingArray.length-1, ALTER, UP);
+                        case "Tierart" -> quickSort(workingArray, 0, workingArray.length-1, TIERART, UP);
+                        case "Rasse" -> quickSort(workingArray, 0, workingArray.length-1, RASSE, UP);
+                        case "Preis" -> quickSort(workingArray, 0, workingArray.length-1, PREIS, UP);
+                    }
+                } else {
+                    switch (sortingColumn.getText()) {
+                        case "Name" -> quickSort(workingArray, 0, workingArray.length-1, NAME, DOWN);
+                        case "Alter" -> quickSort(workingArray, 0, workingArray.length-1, ALTER, DOWN);
+                        case "Tierart" -> quickSort(workingArray, 0, workingArray.length-1, TIERART, DOWN);
+                        case "Rasse" -> quickSort(workingArray, 0, workingArray.length-1, RASSE, DOWN);
+                        case "Preis" -> quickSort(workingArray, 0, workingArray.length-1, PREIS, DOWN);
+                    }
+                }
+            }
+
+            table.getItems().setAll(workingArray);
             return true;
         });
         final boolean[] numberListenerActive = {false};
@@ -284,7 +343,11 @@ public class ZoohandlungController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 if (!numberListenerActive[0]) {
-                    table.sort();
+                    try {
+                        table.sort();
+                    } catch (Exception e) {
+                        ;
+                    }
                 }
             }
         });
@@ -314,6 +377,69 @@ public class ZoohandlungController implements Initializable {
                     numberListenerActive[0] = false;
                 }
                 table.sort();
+            }
+        });
+
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Tier, String>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Tier, String> t) {
+                        Tier tier = t.getRowValue();
+                        tier.setName(t.getNewValue());
+                    }
+                }
+        );
+        alterColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        alterColumn.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Tier, Integer>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Tier, Integer> t) {
+                        Tier tier = t.getRowValue();
+                        tier.setAlter(t.getNewValue());
+                    }
+                }
+        );
+        preisColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        preisColumn.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Tier, Integer>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Tier, Integer> t) {
+                        Tier tier = t.getRowValue();
+                        tier.setPreis(t.getNewValue());
+                    }
+                }
+        );
+        table.setRowFactory(new Callback<TableView<Tier>, TableRow<Tier>>() {
+            @Override
+            public TableRow<Tier> call(TableView<Tier> tableView) {
+                TableRow<Tier> row = new TableRow<>();
+                ContextMenu contextMenu = new ContextMenu();
+
+                MenuItem deleteItem = new MenuItem("Löschen");
+                MenuItem sellItem = new MenuItem("Verkaufen");
+                deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        Tier tier = row.getItem();
+                        zoohandlungen[pane.getParent().getChildrenUnmodifiable().indexOf(pane)].tierEntfernen(tier);
+                        tableView.getItems().remove(tier);
+                    }
+                });
+
+                sellItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Tier tier = row.getItem();
+                        balance = balance + tier.getPreis();
+                        deleteItem.fire();
+                    }
+                });
+
+                contextMenu.getItems().addAll(deleteItem, sellItem);
+                row.setContextMenu(contextMenu);
+
+                return row;
             }
         });
 
@@ -524,6 +650,71 @@ public class ZoohandlungController implements Initializable {
         stack.getChildren().add(pane);
     }
 
+    private boolean lineareSuche(Tier tier, String search, String dropDown) {
+        switch (dropDown) {
+            case "Name":
+                return tier.getName().startsWith(search);
+            case "Alter":
+                return Integer.toString(tier.getAlter()).startsWith(search);
+            case "Tierart":
+                return tier.getTierart().startsWith(search);
+            case "Rasse":
+                return tier.getRasse().startsWith(search);
+            case "Preis":
+                return Integer.toString(tier.getPreis()).startsWith(search);
+            default:
+                throw new IllegalArgumentException("Ungültiges Suchkriterium: " + dropDown);
+        }
+    }
+
+    public void quickSort(Tier[] tiere, int low, int high, int sortCriteria, int sortOrder) {
+        if (low < high) {
+            int pivotIndex = partition(tiere, low, high, sortCriteria, sortOrder);
+            quickSort(tiere, low, pivotIndex - 1, sortCriteria, sortOrder);
+            quickSort(tiere, pivotIndex + 1, high, sortCriteria, sortOrder);
+        }
+    }
+
+    public int partition(Tier[] tiere, int low, int high, int sortCriteria, int sortOrder) {
+        Tier pivotTier = tiere[high];
+        int i = (low - 1);
+
+        for (int j = low; j < high; j++) {
+            int comparisonResult = compareTiere(tiere[j], pivotTier, sortCriteria);
+
+            if ((sortOrder == 0 && comparisonResult < 0) || (sortOrder == 1 && comparisonResult > 0)) {
+                i++;
+
+                Tier temp = tiere[i];
+                tiere[i] = tiere[j];
+                tiere[j] = temp;
+            }
+        }
+
+        Tier temp = tiere[i + 1];
+        tiere[i + 1] = tiere[high];
+        tiere[high] = temp;
+
+        return i + 1;
+    }
+
+    public int compareTiere(Tier a, Tier b, int sortCriteria) {
+        switch (sortCriteria) {
+            case 0:
+                return a.getName().compareTo(b.getName());
+            case 1:
+                return Integer.compare(a.getAlter(), b.getAlter());
+            case 2:
+                return a.getTierart().compareTo(b.getTierart());
+            case 3:
+                return a.getRasse().compareTo(b.getRasse());
+            case 4:
+                return Integer.compare(a.getPreis(), b.getPreis());
+            default:
+                throw new IllegalArgumentException("Ungültiges Sortierkriterium: " + sortCriteria);
+        }
+    }
+
     private void changeStack(int parentIndex, int childIndex) {
         for (int i = 0; i < tree.getRoot().getChildren().size(); i++) {
             if (i == parentIndex) {
@@ -542,7 +733,7 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart, int zooIndex, TableView<Object> table) {
+    private void neuesTier(TextField name, TextField alter, TextField rasse, TextField preis, ComboBox<String> tierart, int zooIndex, TableView<Tier> table) {
         if (name.getText() != "" && alter.getText() != "" && rasse.getText() != "" && preis.getText() != "" && tierart.getValue() != null) {
             zoohandlungen[zooIndex].neuesTier(name.getText(), rasse.getText(), Integer.parseInt(alter.getText()), Integer.parseInt(preis.getText()), tierart.getValue()); // Parameter Hinzufügen
             table.getItems().add(zoohandlungen[zooIndex].getTiere()[zoohandlungen[zooIndex].getTiere().length-1]);
