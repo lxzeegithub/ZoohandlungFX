@@ -32,12 +32,6 @@
                   </MenuItem>
                </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Suche">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Tier Suchen" />
-                  <MenuItem mnemonicParsing="false" text="Pfleger Suchen" />
-               </items>
-          </Menu>
           <Menu mnemonicParsing="false" text="Bank">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#getMoney" text="Kontostand">

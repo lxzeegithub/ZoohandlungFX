@@ -17,6 +17,16 @@ public class Pfleger {
         tier.gibLaut();
     }
 
+    public void waschen(Tier tier) {
+        System.out.println("Das Tier " + tier.getName() + " wurde gewaschen");
+        tier.gibLaut();
+    }
+
+    public void streicheln(Tier tier) {
+        System.out.println("Das Tier " + tier.getName() + " wurde gestreichelt");
+        tier.gibLaut();
+    }
+
     public String getName() {
         return name;
     }
@@ -25,11 +35,23 @@ public class Pfleger {
         return geschlecht;
     }
 
-    public int alter() {
+    public int getAlter() {
         return alter;
     }
 
-    public int gehalt() {
+    public int getGehalt() {
         return gehalt;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGehalt(int gehalt) {
+        this.gehalt = gehalt;
+    }
+
+    public void setAlter(int alter) {
+        this.alter = alter;
     }
 }

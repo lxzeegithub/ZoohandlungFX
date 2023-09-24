@@ -8,7 +8,7 @@ public class Zoohandlung {
     private String name;
     private Tier[] tiere = new Tier[0];
     private Pfleger[] pfleger = new Pfleger[0];
-    private int[] oeffnungszeiten = {800, 800, 800, 800, 800, 800, 800, 1800, 1800, 1800, 1800, 1800, 1800, 1800};
+    private int[] oeffnungszeiten = new int[] {800, 800, 800, 800, 800, 800, 800, 1800, 1800, 1800, 1800, 1800, 1800, 1800};
     private boolean automatisch = false;
 
     public Zoohandlung(String name) {
@@ -30,11 +30,27 @@ public class Zoohandlung {
     }
 
     public void tierEntfernen(Tier tier) {
-
+        for (int i = 0; i < tiere.length; i++) {
+            if (tiere[i] == tier) {
+                for (int j = i; j < tiere.length-1; j++) {
+                    tiere[j] = tiere[j+1];
+                }
+                tiere = Arrays.copyOf(tiere, tiere.length-1);
+                break;
+            }
+        }
     }
 
-    public void pflegerEntfernen(Pfleger pfleger) {
-
+    public void pflegerEntfernen(Pfleger pPfleger) {
+        for (int i = 0; i < pfleger.length; i++) {
+            if (pfleger[i] == pPfleger) {
+                for (int j = i; j < pfleger.length-1; j++) {
+                    pfleger[j] = pfleger[j+1];
+                }
+                pfleger = Arrays.copyOf(pfleger, pfleger.length-1);
+                break;
+            }
+        }
     }
 
     private void addTier(Tier tier) {

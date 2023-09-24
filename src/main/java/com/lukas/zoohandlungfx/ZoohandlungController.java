@@ -1,7 +1,10 @@
 package com.lukas.zoohandlungfx;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,12 +18,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
+import javafx.util.Duration;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
+import java.security.Key;
+import java.security.spec.ECField;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -42,6 +52,8 @@ public class ZoohandlungController implements Initializable {
     private final int TIERART = 2;
     private final int RASSE = 3;
     private final int PREIS = 4;
+    private final int GESCHLECHT = 2;
+    private final int GEHALT = 3;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -79,6 +91,15 @@ public class ZoohandlungController implements Initializable {
         });
 
         demo();
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(60), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                updateOpenZoohandlung();
+            }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     private void demo() {
@@ -91,12 +112,23 @@ public class ZoohandlungController implements Initializable {
         zoohandlungen[0].neuesTier("Daniel", "Baur", 5, 14, "Katze");
         zoohandlungen[0].neuesTier("Florian", "Rex", 88, 56, "Hamster");
         zoohandlungen[0].neuesTier("Mika", "Kuppke", 54, 11, "Hund");
+        zoohandlungen[0].neuerPfleger("Karl", "Männlich", 12, 1500);
+        zoohandlungen[0].neuerPfleger("Ute", "Weiblich", 54, 1200);
+        zoohandlungen[0].neuerPfleger("Mona", "Weiblich", 33, 2700);
+        zoohandlungen[0].neuerPfleger("Felix", "Männlich", 18, 800);
+        zoohandlungen[0].neuerPfleger("Hans", "Männlich", 67, 2450);
         StackPane stackPane = (StackPane) stack.getChildren().get(0);
         TabPane tab = (TabPane) stackPane.getChildren().get(0);
         Tab tiereTab = tab.getTabs().get(1);
         AnchorPane tierePane = (AnchorPane) tiereTab.getContent();
         TableView table = (TableView) tierePane.getChildren().get(3);
         table.getItems().setAll(zoohandlungen[0].getTiere());
+
+        TabPane tabPfleger = (TabPane) stackPane.getChildren().get(1);
+        Tab pflegerTab = tabPfleger.getTabs().get(1);
+        AnchorPane pflegerPane = (AnchorPane) pflegerTab.getContent();
+        TableView tablePfleger = (TableView) pflegerPane.getChildren().get(3);
+        tablePfleger.getItems().setAll(zoohandlungen[0].getPfleger());
     }
 
     @FXML
@@ -199,6 +231,7 @@ public class ZoohandlungController implements Initializable {
         tiereTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         pflegerTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         TableView<Tier> table = new TableView<>();
+        TableView<Pfleger> tablePfleger = new TableView<>();
 
         //Neues Tier
         AnchorPane neuesTierPane = new AnchorPane();
@@ -472,7 +505,7 @@ public class ZoohandlungController implements Initializable {
         neuerPflegerSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                neuerPfleger(namePflegerTextField, alterPflegerTextField, gehaltPflegerTextField, geschlechtPflegerComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane));
+                neuerPfleger(namePflegerTextField, alterPflegerTextField, gehaltPflegerTextField, geschlechtPflegerComboBox, pane.getParent().getChildrenUnmodifiable().indexOf(pane), tablePfleger);
             }
         });
         neuerPflegerPane.getChildren().addAll(
@@ -496,9 +529,254 @@ public class ZoohandlungController implements Initializable {
         //Pfleger
         AnchorPane pflegerPane = new AnchorPane();
         Label titlePfleger = createTitel("Pfleger");
+        TextField searchBarPfleger = createTextField("Suchen", 150, 50, 360, 20, false);
+        ComboBox<String> searchDropdownPfleger = createDropdown("", 30, 50, 100, 20, "Name", "Alter", "Geschlecht", "Gehalt");
+        searchDropdownPfleger.setValue("Name");
+        tablePfleger.setEditable(true);
+        tablePfleger.setPrefWidth(480);
+        tablePfleger.setPrefHeight(300);
+        tablePfleger.setTranslateX(30);
+        tablePfleger.setTranslateY(80);
+        TableColumn nameColumnPfleger = new TableColumn("Name");
+        nameColumnPfleger.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumnPfleger.setReorderable(false);
+        nameColumnPfleger.setResizable(false);
+        nameColumnPfleger.setPrefWidth(150);
+        TableColumn alterColumnPfleger = new TableColumn("Alter");
+        alterColumnPfleger.setCellValueFactory(new PropertyValueFactory<>("alter"));
+        alterColumnPfleger.setReorderable(false);
+        alterColumnPfleger.setResizable(false);
+        alterColumnPfleger.setPrefWidth(80);
+        TableColumn geschlechtColumnPfleger = new TableColumn("Geschlecht");
+        geschlechtColumnPfleger.setCellValueFactory(new PropertyValueFactory<>("geschlecht"));
+        geschlechtColumnPfleger.setReorderable(false);
+        geschlechtColumnPfleger.setResizable(false);
+        geschlechtColumnPfleger.setEditable(false);
+        geschlechtColumnPfleger.setPrefWidth(130);
+        TableColumn gehaltColumnPfleger = new TableColumn("Gehalt");
+        gehaltColumnPfleger.setCellValueFactory(new PropertyValueFactory<>("gehalt"));
+        gehaltColumnPfleger.setReorderable(false);
+        gehaltColumnPfleger.setResizable(false);
+        gehaltColumnPfleger.setPrefWidth(120);
+        tablePfleger.getColumns().addAll(nameColumnPfleger, alterColumnPfleger, geschlechtColumnPfleger, gehaltColumnPfleger);
+        tablePfleger.sortPolicyProperty().set(t -> {
+            TableColumn sortingColumn = null;
+            TableColumn.SortType type = null;
+            String searchBarText = searchBarPfleger.getText();
+            String searchDropdownText = searchDropdownPfleger.getValue();
+            int zooIndex;
+            try {
+                zooIndex = pane.getParent().getChildrenUnmodifiable().indexOf(pane);
+            } catch(Exception e) {
+                return true;
+            }
+            if (tablePfleger.getSortOrder().size() > 0) {
+                sortingColumn = tablePfleger.getSortOrder().get(0);
+                type = tablePfleger.getColumns().get(tablePfleger.getColumns().indexOf(sortingColumn)).getSortType();
+            }
+            Pfleger[] workingArray = zoohandlungen[zooIndex].getPfleger();
+
+            //Suchen
+            if (!searchBarText.equals("")) {
+                Pfleger[] searched = new Pfleger[workingArray.length];
+                int help = 0;
+                for (int i = 0; i < workingArray.length; i++) {
+                    if (lineareSuchePfleger(workingArray[i], searchBarText, searchDropdownText)) {
+                        searched[help] = workingArray[i];
+                        help++;
+                    }
+                }
+                workingArray = searched;
+                for (int i = 0; i < workingArray.length; i++) {
+                    if (workingArray[i] == null) {
+                        workingArray = Arrays.copyOf(workingArray, workingArray.length-(workingArray.length-i));
+                        break;
+                    }
+                }
+            }
+
+            if (sortingColumn != null) {
+                if (type == TableColumn.SortType.ASCENDING) {
+                    switch (sortingColumn.getText()) {
+                        case "Name" -> quickSortPfleger(workingArray, 0, workingArray.length-1, NAME, UP);
+                        case "Alter" -> quickSortPfleger(workingArray, 0, workingArray.length-1, ALTER, UP);
+                        case "Geschlecht" -> quickSortPfleger(workingArray, 0, workingArray.length-1, GESCHLECHT, UP);
+                        case "Gehalt" -> quickSortPfleger(workingArray, 0, workingArray.length-1, GEHALT, UP);
+                    }
+                } else {
+                    switch (sortingColumn.getText()) {
+                        case "Name" -> quickSortPfleger(workingArray, 0, workingArray.length-1, NAME, DOWN);
+                        case "Alter" -> quickSortPfleger(workingArray, 0, workingArray.length-1, ALTER, DOWN);
+                        case "Geschlecht" -> quickSortPfleger(workingArray, 0, workingArray.length-1, GESCHLECHT, DOWN);
+                        case "Gehalt" -> quickSortPfleger(workingArray, 0, workingArray.length-1, GEHALT, DOWN);
+                    }
+                }
+            }
+
+            tablePfleger.getItems().setAll(workingArray);
+            return true;
+        });
+        final boolean[] numberListenerActivePfleger = {false};
+        final boolean[] numberListenerTriggeredPfleger = {false};
+
+        searchBarPfleger.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (!numberListenerActive[0]) {
+                    try {
+                        tablePfleger.sort();
+                    } catch (Exception e) {
+                        ;
+                    }
+                }
+            }
+        });
+        ChangeListener<String> searchNumberListenerPfleger = new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (numberListenerTriggeredPfleger[0]) {
+                    numberListenerTriggeredPfleger[0] = false;
+                    return;
+                }
+                if (!newValue.matches("\\d*")) {
+                    numberListenerTriggeredPfleger[0] = true;
+                    searchBarPfleger.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+                tablePfleger.sort();
+            }
+        };
+        searchDropdownPfleger.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if ((t1 == "Alter" || t1 == "Gehalt") && !numberListenerActivePfleger[0]) {
+                    searchBarPfleger.setText("");
+                    searchBarPfleger.textProperty().addListener(searchNumberListenerPfleger);
+                    numberListenerActivePfleger[0] = true;
+                } else if (t1 != "Alter" && t1 != "Gehalt" && numberListenerActivePfleger[0]){
+                    searchBarPfleger.textProperty().removeListener(searchNumberListenerPfleger);
+                    numberListenerActivePfleger[0] = false;
+                }
+                tablePfleger.sort();
+            }
+        });
+
+        nameColumnPfleger.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumnPfleger.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Pfleger, String>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Pfleger, String> t) {
+                        Pfleger pfleger = t.getRowValue();
+                        pfleger.setName(t.getNewValue());
+                    }
+                }
+        );
+        alterColumnPfleger.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        alterColumnPfleger.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Pfleger, Integer>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Pfleger, Integer> t) {
+                        Pfleger pfleger = t.getRowValue();
+                        pfleger.setAlter(t.getNewValue());
+                    }
+                }
+        );
+        gehaltColumnPfleger.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        gehaltColumnPfleger.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Pfleger, Integer>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Pfleger, Integer> t) {
+                        Pfleger pfleger = t.getRowValue();
+                        pfleger.setGehalt(t.getNewValue());
+                    }
+                }
+        );
+        tablePfleger.setRowFactory(new Callback<TableView<Pfleger>, TableRow<Pfleger>>() {
+            @Override
+            public TableRow<Pfleger> call(TableView<Pfleger> t) {
+                TableRow<Pfleger> row = new TableRow<>();
+                ContextMenu contextMenu = new ContextMenu();
+
+                MenuItem deleteItem = new MenuItem("Löschen");
+                MenuItem actionItem = new MenuItem("Aktion");
+                deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        Pfleger pfleger = row.getItem();
+                        zoohandlungen[pane.getParent().getChildrenUnmodifiable().indexOf(pane)].pflegerEntfernen(pfleger);
+                        t.getItems().remove(pfleger);
+                    }
+                });
+
+                actionItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Pfleger pfleger = row.getItem();
+                        Tier[] tiere = zoohandlungen[pane.getParent().getChildrenUnmodifiable().indexOf(pane)].getTiere();
+                        if (tiere.length > 0) {
+                            ComboBox<String> actionBox = new ComboBox<>(FXCollections.observableArrayList("Füttern", "Waschen", "Streicheln"));
+                            actionBox.setValue("füttern");
+                            ComboBox<String> tiereBox = new ComboBox<>();
+                            tiereBox.setValue(tiere[0].getName());
+                            for (int i = 0; i < tiere.length; i++) {
+                                tiereBox.getItems().add(tiere[i].getName());
+                            }
+                            VBox vbox = new VBox(actionBox, tiereBox);
+                            ChoiceDialog<String> dialog = new ChoiceDialog<>();
+                            dialog.getDialogPane().setContent(vbox);
+                            dialog.setTitle("Aktionen");
+                            dialog.setHeaderText("");
+                            dialog.setGraphic(null);
+                            dialog.showAndWait();
+                            String action = actionBox.getValue();
+                            String tier = tiereBox.getValue();
+                            switch(action) {
+                                case "Füttern":
+                                    for (int i = 0; i < tiere.length; i++) {
+                                        if (tiere[i].getName() == tier) {
+                                            pfleger.fuettern(tiere[i]);
+                                        }
+                                    }
+                                    break;
+                                case "Waschen":
+
+                                    for (int i = 0; i < tiere.length; i++) {
+                                        if (tiere[i].getName() == tier) {
+                                            pfleger.waschen(tiere[i]);
+                                        }
+                                    }
+                                    break;
+                                case "Streicheln":
+                                    for (int i = 0; i < tiere.length; i++) {
+                                        if (tiere[i].getName() == tier) {
+                                            pfleger.streicheln(tiere[i]);
+                                        }
+                                    }
+                                    break;
+                            }
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Keine Tiere verfügbar");
+                            alert.setHeaderText("");
+                            alert.setGraphic(null);
+                            alert.setContentText("Es ist kein Tür für Aktionen verfügbar");
+                            alert.showAndWait();
+                        }
+
+                    }
+                });
+
+                contextMenu.getItems().addAll(deleteItem, actionItem);
+                row.setContextMenu(contextMenu);
+
+                return row;
+            }
+        });
 
         pflegerPane.getChildren().addAll(
-                titlePfleger
+                titlePfleger,
+                searchBarPfleger,
+                searchDropdownPfleger,
+                tablePfleger
         );
 
 
@@ -557,23 +835,32 @@ public class ZoohandlungController implements Initializable {
         oeffnungsZeitenButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                int index = oeffnungsZeitenButton.getParent().getParent().getParent().getChildrenUnmodifiable().indexOf(oeffnungsZeitenButton.getParent().getParent());
-                zoohandlungen[index].setOeffnungszeiten(new int[]{
-                        Integer.parseInt(montagOeffnenField.getText()),
-                        Integer.parseInt(dienstagOeffnenField.getText()),
-                        Integer.parseInt(mittwochOeffnenField.getText()),
-                        Integer.parseInt(donnerstagOeffnenField.getText()),
-                        Integer.parseInt(freitagOeffnenField.getText()),
-                        Integer.parseInt(samstagOeffnenField.getText()),
-                        Integer.parseInt(sonntagOeffnenField.getText()),
-                        Integer.parseInt(montagSchliessenField.getText()),
-                        Integer.parseInt(dienstagSchliessenField.getText()),
-                        Integer.parseInt(mittwochSchliessenField.getText()),
-                        Integer.parseInt(donnerstagSchliessenField.getText()),
-                        Integer.parseInt(freitagSchliessenField.getText()),
-                        Integer.parseInt(samstagSchliessenField.getText()),
-                        Integer.parseInt(sonntagSchliessenField.getText())
-                });
+                int index = pane.getParent().getChildrenUnmodifiable().indexOf(pane);
+                try {
+                    zoohandlungen[index].setOeffnungszeiten(new int[] {
+                            Integer.parseInt(montagOeffnenField.getText()),
+                            Integer.parseInt(dienstagOeffnenField.getText()),
+                            Integer.parseInt(mittwochOeffnenField.getText()),
+                            Integer.parseInt(donnerstagOeffnenField.getText()),
+                            Integer.parseInt(freitagOeffnenField.getText()),
+                            Integer.parseInt(samstagOeffnenField.getText()),
+                            Integer.parseInt(sonntagOeffnenField.getText()),
+                            Integer.parseInt(montagSchliessenField.getText()),
+                            Integer.parseInt(dienstagSchliessenField.getText()),
+                            Integer.parseInt(mittwochSchliessenField.getText()),
+                            Integer.parseInt(donnerstagSchliessenField.getText()),
+                            Integer.parseInt(freitagSchliessenField.getText()),
+                            Integer.parseInt(samstagSchliessenField.getText()),
+                            Integer.parseInt(sonntagSchliessenField.getText())
+                    });
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Ungültige Eingabe");
+                    alert.setHeaderText("");
+                    alert.setGraphic(null);
+                    alert.setContentText("Bitte füllen Sie alle Felder aus!");
+                    alert.showAndWait();
+                }
             }
         });
 
@@ -667,6 +954,21 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
+    private boolean lineareSuchePfleger(Pfleger pfleger, String search, String dropDown) {
+        switch (dropDown) {
+            case "Name":
+                return pfleger.getName().startsWith(search);
+            case "Alter":
+                return Integer.toString(pfleger.getAlter()).startsWith(search);
+            case "Geschlecht":
+                return pfleger.getGeschlecht().startsWith(search);
+            case "Gehalt":
+                return Integer.toString(pfleger.getGehalt()).startsWith(search);
+            default:
+                throw new IllegalArgumentException("Ungültiges Suchkriterium: " + dropDown);
+        }
+    }
+
     public void quickSort(Tier[] tiere, int low, int high, int sortCriteria, int sortOrder) {
         if (low < high) {
             int pivotIndex = partition(tiere, low, high, sortCriteria, sortOrder);
@@ -698,6 +1000,37 @@ public class ZoohandlungController implements Initializable {
         return i + 1;
     }
 
+    public void quickSortPfleger(Pfleger[] pfleger, int low, int high, int sortCriteria, int sortOrder) {
+        if (low < high) {
+            int pivotIndex = partitionPfleger(pfleger, low, high, sortCriteria, sortOrder);
+            quickSortPfleger(pfleger, low, pivotIndex - 1, sortCriteria, sortOrder);
+            quickSortPfleger(pfleger, pivotIndex + 1, high, sortCriteria, sortOrder);
+        }
+    }
+
+    public int partitionPfleger(Pfleger[] pfleger, int low, int high, int sortCriteria, int sortOrder) {
+        Pfleger pivotPfleger = pfleger[high];
+        int i = (low - 1);
+
+        for (int j = low; j < high; j++) {
+            int comparisonResult = comparePfleger(pfleger[j], pivotPfleger, sortCriteria);
+
+            if ((sortOrder == 0 && comparisonResult < 0) || (sortOrder == 1 && comparisonResult > 0)) {
+                i++;
+
+                Pfleger temp = pfleger[i];
+                pfleger[i] = pfleger[j];
+                pfleger[j] = temp;
+            }
+        }
+
+        Pfleger temp = pfleger[i + 1];
+        pfleger[i + 1] = pfleger[high];
+        pfleger[high] = temp;
+
+        return i + 1;
+    }
+
     public int compareTiere(Tier a, Tier b, int sortCriteria) {
         switch (sortCriteria) {
             case 0:
@@ -710,6 +1043,21 @@ public class ZoohandlungController implements Initializable {
                 return a.getRasse().compareTo(b.getRasse());
             case 4:
                 return Integer.compare(a.getPreis(), b.getPreis());
+            default:
+                throw new IllegalArgumentException("Ungültiges Sortierkriterium: " + sortCriteria);
+        }
+    }
+
+    public int comparePfleger(Pfleger a, Pfleger b, int sortCriteria) {
+        switch (sortCriteria) {
+            case 0:
+                return a.getName().compareTo(b.getName());
+            case 1:
+                return Integer.compare(a.getAlter(), b.getAlter());
+            case 2:
+                return a.getGeschlecht().compareTo(b.getGeschlecht());
+            case 3:
+                return Integer.compare(a.getGehalt(), b.getGehalt());
             default:
                 throw new IllegalArgumentException("Ungültiges Sortierkriterium: " + sortCriteria);
         }
@@ -745,9 +1093,10 @@ public class ZoohandlungController implements Initializable {
         }
     }
 
-    private void neuerPfleger(TextField name, TextField alter, TextField gehalt, ComboBox<String> geschlecht, int zooIndex) {
+    private void neuerPfleger(TextField name, TextField alter, TextField gehalt, ComboBox<String> geschlecht, int zooIndex, TableView<Pfleger> table) {
         if (name.getText() !=  "" && alter.getText() != "" && gehalt.getText() != "" && geschlecht.getValue() != null) {
             zoohandlungen[zooIndex].neuerPfleger(name.getText(), geschlecht.getValue(), Integer.parseInt(alter.getText()), Integer.parseInt(gehalt.getText()));
+            table.getItems().add(zoohandlungen[zooIndex].getPfleger()[zoohandlungen[zooIndex].getPfleger().length-1]);
             geschlecht.setValue(null);
             name.setText("");
             alter.setText("");
@@ -831,6 +1180,54 @@ public class ZoohandlungController implements Initializable {
         alert.showAndWait();
     }
 
+    private void updateOpenZoohandlung() {
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
+        int time = Integer.parseInt(currentTime.format(formatter));
+        String day = LocalDate.now().getDayOfWeek().toString();
+        int indexOpen = 0;
+        int indexClose = 7;
+        switch (day) {
+            case "TUESDAY":
+                indexOpen = 1;
+                indexClose = 8;
+                break;
+            case "WEDNESDAY":
+                indexOpen = 2;
+                indexClose = 9;
+                break;
+            case "THURSDAY":
+                indexOpen = 3;
+                indexClose = 10;
+            case "FRIDAY":
+                indexOpen = 4;
+                indexClose = 11;
+                break;
+            case "SATURDAY":
+                indexOpen = 5;
+                indexClose = 12;
+                break;
+            case "SUNDAY":
+                indexOpen = 6;
+                indexClose = 13;
+                break;
+        }
+
+        for(int i = 0; i < zoohandlungen.length; i++) {
+            if (zoohandlungen[i].getAutomatisch()) {
+                System.out.println(Arrays.toString(zoohandlungen[i].getOeffnungszeiten()));
+                if (zoohandlungen[i].getOeffnungszeiten()[indexOpen] == time) {
+                    tree.getRoot().getChildren().get(i).setGraphic(new ImageView(greenDot));
+                    zoohandlungen[i].oeffnen();
+                    tree.refresh();
+                } else if (zoohandlungen[i].getOeffnungszeiten()[indexClose] == time) {
+                    tree.getRoot().getChildren().get(i).setGraphic(new ImageView(redDot));
+                    zoohandlungen[i].schliessen();
+                    tree.refresh();
+                }
+            }
+        }
+    }
 
 }
 
